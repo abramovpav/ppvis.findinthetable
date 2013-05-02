@@ -3,9 +3,9 @@ package by.bsuir.iit.abramov.ppvis.findinthetable.view;
 import javax.swing.JFrame;
 
 public class Window extends JFrame {
-	public static final int		defaultX		= 300;
+	public static final int		defaultX		= 200;
 	public static final int		defaultY		= 100;
-	public static final int		defaultWidth	= 800;
+	public static final int		defaultWidth	= 995;
 	public static final int		defaultHeight	= 600;
 	public static final String	TITLE			= "FindInTheTable";
 

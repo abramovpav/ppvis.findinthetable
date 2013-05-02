@@ -3,7 +3,7 @@ package by.bsuir.iit.abramov.ppvis.findinthetable.controller;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import by.bsuir.iit.abramov.ppvis.findinthetable.view.AddDialog;
+import by.bsuir.iit.abramov.ppvis.findinthetable.view.ADialog;
 
 public class AddButtonActionListener implements ActionListener, ButtonActionListener {
 
@@ -19,7 +19,7 @@ public class AddButtonActionListener implements ActionListener, ButtonActionList
 
 		// TODO Auto-generated method stub
 		System.out.println("AddButtonActionListener");
-		final AddDialog dialog = new AddDialog();
+		final ADialog dialog = new ADialog();
 		dialog.setModal(true);
 		dialog.setVisible(true);
 
