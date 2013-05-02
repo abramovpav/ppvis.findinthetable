@@ -3,7 +3,7 @@
  * 
  */
 
-package by.bsuir.iit.abramov.ppvis.findinthetable.table;
+package by.bsuir.iit.abramov.ppvis.findinthetable.model.table;
 
 import java.awt.Dimension;
 import java.util.Enumeration;
@@ -11,6 +11,8 @@ import java.util.Vector;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
+
+import by.bsuir.iit.abramov.ppvis.findinthetable.model.Student;
 
 /**
  * @version 1.0 11/22/98
@@ -24,14 +26,16 @@ public class AttributiveCellTableModel extends DefaultTableModel {
 	}
 
 	protected CellAttribute	cellAtt;
+	private Student[]		students;
 
 	public AttributiveCellTableModel() {
 
 		this((Vector) null, 0);
 	}
 
-	public AttributiveCellTableModel(final int numRows, final int numColumns) {
+	public AttributiveCellTableModel(final int numColumns, final Student[] students) {
 
+		this.students = students;
 		final Vector names = new Vector(numColumns);
 		names.setSize(numColumns);
 		for (int i = 0; i < names.size(); ++i) {
@@ -39,6 +43,7 @@ public class AttributiveCellTableModel extends DefaultTableModel {
 		}
 		setColumnIdentifiers(names);
 		dataVector = new Vector();
+		final int numRows = students.length * 2 + 2;
 		setNumRows(numRows);
 		cellAtt = new DefaultCellAttribute(numRows, numColumns);
 	}
@@ -130,8 +135,26 @@ public class AttributiveCellTableModel extends DefaultTableModel {
 			return "наим.";
 		} else if (row >= 2 && col >= 2 && col % 2 != 0 && row % 2 == 0) {
 			return "балл";
+		} else {
+			final int indexStudent = row / 2 - 1;
+			if (row >= 2 && col == 0 && row % 2 == 0) {
+				return students[indexStudent].getName();
+			} else if (row >= 2 && col == 1 && row % 2 == 0) {
+				return students[indexStudent].getGroup();
+			} else {
+				final int indexExam = col / 2 - 1;
+				if (row >= 2 && col >= 2 && col % 2 == 0) {
+					if (indexExam < students[indexStudent].getExams().length) {
+						return students[indexStudent].getExams()[indexExam].getName();
+					}
+				} else if (row >= 2 && col >= 2 && col % 2 != 0) {
+					if (indexExam < students[indexStudent].getExams().length) {
+						return students[indexStudent].getExams()[indexExam].getMark();
+					}
+				}
+			}
 		}
-		return "" + row + "," + col;
+		return "null";
 	}
 
 	@Override
@@ -210,6 +233,14 @@ public class AttributiveCellTableModel extends DefaultTableModel {
 				.nonNullVector(columnIdentifiers);
 		justifyRows(0, getRowCount());
 		fireTableStructureChanged();
+	}
+
+	public void setStudentsList(final Student[] students) {
+
+		this.students = students;
+		final int numRows = students.length * 2 + 2;
+		setNumRows(numRows);
+		cellAtt = new DefaultCellAttribute(numRows, getColumnCount());
 	}
 
 	/*

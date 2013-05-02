@@ -3,7 +3,7 @@
  * 
  */
 
-package by.bsuir.iit.abramov.ppvis.findinthetable.table;
+package by.bsuir.iit.abramov.ppvis.findinthetable.model.table;
 
 /**
  * @version 1.0 11/22/98

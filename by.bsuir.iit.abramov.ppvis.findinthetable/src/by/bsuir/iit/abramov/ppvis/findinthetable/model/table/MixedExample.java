@@ -1,4 +1,4 @@
-package by.bsuir.iit.abramov.ppvis.findinthetable.table;
+package by.bsuir.iit.abramov.ppvis.findinthetable.model.table;
 
 /*
  * (swing1.1beta3)
@@ -27,6 +27,9 @@ import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
+
+import by.bsuir.iit.abramov.ppvis.findinthetable.model.Exam;
+import by.bsuir.iit.abramov.ppvis.findinthetable.model.Student;
 
 /**
  * @version 1.0 11/22/98
@@ -223,8 +226,9 @@ public class MixedExample extends JFrame {
 	public MixedExample() {
 
 		super("Mixed Example");
-
-		final AttributiveCellTableModel ml = new AttributiveCellTableModel(20, 5);
+		final Student[] students = { new Student("Abramov", new Integer(9), new Exam(
+				"Math", 9)) };
+		final AttributiveCellTableModel ml = new AttributiveCellTableModel(5, students);
 		final CellAttribute cellAtt = ml.getCellAttribute();
 		final MultiSpanCellTable table = new MultiSpanCellTable(ml);
 		table.setCellSelectionEnabled(true);

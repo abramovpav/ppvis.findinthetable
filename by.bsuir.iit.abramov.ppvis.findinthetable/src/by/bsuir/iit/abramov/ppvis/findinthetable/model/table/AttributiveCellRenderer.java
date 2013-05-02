@@ -1,4 +1,4 @@
-package by.bsuir.iit.abramov.ppvis.findinthetable.table;
+package by.bsuir.iit.abramov.ppvis.findinthetable.model.table;
 
 import java.awt.Color;
 import java.awt.Component;

@@ -2,7 +2,7 @@
  * (swing1.1beta3)
  */
 
-package by.bsuir.iit.abramov.ppvis.findinthetable.table;
+package by.bsuir.iit.abramov.ppvis.findinthetable.model.table;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
