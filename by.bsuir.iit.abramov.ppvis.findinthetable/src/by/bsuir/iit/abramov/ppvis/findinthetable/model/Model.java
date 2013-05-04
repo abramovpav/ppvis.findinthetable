@@ -24,6 +24,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -37,14 +38,26 @@ public class Model {
 		public boolean	bool;
 	}
 
-	private static final String		ERROR_FILE_INCORRECT	= "***ERROR***: File incorrect";
+	private static final String		PROBLEM_PARSING_THE_FILE			= "Problem parsing the file: ";
+	private static final String		ERROR_ERROR_IN_CREATING_DOC			= "***ERROR***: Error in creating doc";
+	private static final String		ERROR_INCORRECT_QUANTITY_IN_EXAMS	= "***ERROR***: Incorrect quantity in exams";
+	private static final String		FIELD_MARK							= "mark";
+	private static final String		FIELD_STUDENTS						= "students";
+	private static final String		FIELD_STUDENT						= "student";
+	private static final String		FIELD_EXAM							= "exam";
+	private static final String		FIELD_EXAMS							= "exams";
+	private static final String		FIELD_GROUP							= "group";
+
+	private static final String		FIELD_NAME							= "name";
+
+	private static final String		ERROR_FILE_INCORRECT				= "***ERROR***: File incorrect";
 	private final Vector<Student>	students;
 	private JTextField				observer;
 	private final List<Controller>	observers;
-	public static final int			DEFAULT_VIEWSIZE		= 10;
-	private Integer					viewSize				= Model.DEFAULT_VIEWSIZE;
+	public static final int			DEFAULT_VIEWSIZE					= 10;
+	private Integer					viewSize							= Model.DEFAULT_VIEWSIZE;
 
-	private int						currPage				= -1;
+	private int						currPage							= -1;
 
 	public Model() {
 
@@ -66,6 +79,44 @@ public class Model {
 		}
 	}
 
+	public Document createDocument() {
+
+		Document doc = null;
+		try {
+			final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			dbf.setValidating(true);
+			final DocumentBuilder db = dbf.newDocumentBuilder();
+			doc = db.newDocument();
+			final Element root = doc.createElement(Model.FIELD_STUDENTS);
+			for (int i = 0; i < students.size(); ++i) {
+				final Student student = students.get(i);
+				final Element studentElement = doc.createElement(Model.FIELD_STUDENT);
+				root.appendChild(studentElement);
+				newElement(doc, Model.FIELD_NAME, studentElement, student.getName());
+				newElement(doc, Model.FIELD_GROUP, studentElement, student.getGroup()
+						.toString());
+				final Exam[] exams = student.getExams();
+				final Element examsElement = doc.createElement(Model.FIELD_EXAMS);
+				studentElement.appendChild(examsElement);
+				for (int j = 0; j < exams.length; ++j) {
+					final Exam exam = exams[j];
+					if (!exam.isEmpty()) {
+						final Element examElement = doc.createElement(Model.FIELD_EXAM);
+						examsElement.appendChild(examElement);
+						newElement(doc, Model.FIELD_NAME, examElement,
+								exam.getName() != null ? exam.getName() : " ");
+						newElement(doc, Model.FIELD_MARK, examElement,
+								exam.getMark() != null ? exam.getMark().toString() : " ");
+					}
+				}
+			}
+			doc.appendChild(root);
+		} catch (final Exception e) {
+			System.out.print(Model.PROBLEM_PARSING_THE_FILE + e.getMessage());
+		}
+		return doc;
+	}
+
 	public final int getCurrPage() {
 
 		return currPage;
@@ -82,7 +133,7 @@ public class Model {
 	private int getMaxPage() {
 
 		final double max = (double) students.size() / (double) viewSize;
-		int result = result = students.size() / viewSize;
+		int result = students.size() / viewSize;
 		if (max % 2 != 0 && max % 2 != 1) {
 			result += 1;
 		}
@@ -91,7 +142,6 @@ public class Model {
 
 	public Student[] getNextPageOfStudents() {
 
-		System.out.println(currPage);
 		if (currPage < getMaxPage() - 1) {
 			currPage++;
 		}
@@ -103,7 +153,6 @@ public class Model {
 		if (students.size() == 0) {
 			return null;
 		}
-		System.out.println(getMaxPage());
 		if (currPage < 0 || currPage >= getMaxPage()) {
 			return null;
 		}
@@ -116,7 +165,6 @@ public class Model {
 		if (size == 0) {
 			return null;
 		}
-		System.out.println("size = " + size);
 		final Student[] pageStudents = new Student[size];
 		for (int i = 0; i < size; ++i) {
 			pageStudents[i] = students.get(i + viewSize * currPage);
@@ -126,7 +174,6 @@ public class Model {
 
 	public Student[] getPrevPageOfStudents() {
 
-		System.out.println(currPage);
 		if (currPage > 0) {
 			currPage--;
 		}
@@ -136,6 +183,17 @@ public class Model {
 	public final Integer getViewSize() {
 
 		return viewSize;
+	}
+
+	private void newElement(final Document doc, final String name,
+			final Element studentElement, final String text) {
+
+		Element element;
+		Text textElement;
+		element = doc.createElement(name);
+		textElement = doc.createTextNode(text);
+		studentElement.appendChild(element);
+		element.appendChild(textElement);
 	}
 
 	public void notifyObserver() {
@@ -150,8 +208,6 @@ public class Model {
 		final Document doc = parseForDOM(file);
 		parse(doc);
 		update();
-		// start(file.getPath());
-
 	}
 
 	private void parse(final Document doc) {
@@ -172,18 +228,6 @@ public class Model {
 				}
 			}
 		}
-		for (int i = 0; i < students.size(); ++i) {
-			final Student student = students.get(i);
-			final Exam[] exams = student.getExams();
-			for (int j = 0; j < exams.length; ++j) {
-				if (exams[j] != null) {
-					System.out.println(student.getName() + " " + student.getGroup() + " "
-							+ (exams[j].getName() != null ? exams[j].getName() : "null")
-							+ " "
-							+ (exams[j].getMark() != null ? exams[j].getMark() : "null"));
-				}
-			}
-		}
 		this.students.clear();
 		this.students.addAll(students);
 	}
@@ -199,10 +243,10 @@ public class Model {
 				if (field.getNodeType() == Node.ELEMENT_NODE) {
 					final Node item = field.getChildNodes().item(0);
 					if (item != null) {
-						if (field.getNodeName() == "name") {
+						if (field.getNodeName() == Model.FIELD_NAME) {
 							name = item.getNodeValue();
 						}
-						if (field.getNodeName() == "mark") {
+						if (field.getNodeName() == Model.FIELD_MARK) {
 							mark = item.getNodeValue();
 						}
 					}
@@ -251,7 +295,7 @@ public class Model {
 				return doc;
 			}
 		} catch (final Exception e) {
-			System.out.print("Problem parsing the file: " + e.getMessage());
+			System.out.print(Model.PROBLEM_PARSING_THE_FILE + e.getMessage());
 		}
 		return null;
 	}
@@ -263,6 +307,7 @@ public class Model {
 
 	private Student parseStudent(final Node nodeStudent) {
 
+		boolean quantityError = false;
 		String name = "";
 		String group = "";
 		final Exam[] exams = new Exam[Desktop.EXAMS_COUNT];
@@ -277,23 +322,31 @@ public class Model {
 						if (childFields.getLength() == 1) {
 							final Node item = childFields.item(0);
 							if (item != null) {
-								if (field.getNodeName() == "name") {
+								if (field.getNodeName() == Model.FIELD_NAME) {
 									name = item.getNodeValue();
 								}
-								if (field.getNodeName() == "group") {
+								if (field.getNodeName() == Model.FIELD_GROUP) {
 									group = item.getNodeValue();
 								}
 							}
 						} else {
+							int counter = 0;
 							for (int j = 0; j < childFields.getLength(); ++j) {
 								final Node examField = childFields.item(j);
+
 								if (examField != null) {
 									if (examField.getNodeType() == Node.ELEMENT_NODE) {
-										final Exam exam = parseExam(examField);
-										exams[index] = exam;
-										index++;
+										if (counter < Desktop.EXAMS_COUNT) {
+											final Exam exam = parseExam(examField);
+											exams[index] = exam;
+											index++;
+											counter++;
+										} else {
+											quantityError = true;
+										}
 									}
 								}
+
 							}
 						}
 					}
@@ -303,30 +356,12 @@ public class Model {
 		for (; index < Desktop.EXAMS_COUNT; ++index) {
 			exams[index] = new Exam("", null);
 		}
+		if (quantityError) {
+			JOptionPane.showMessageDialog(null, Model.ERROR_INCORRECT_QUANTITY_IN_EXAMS
+					+ "(>" + Desktop.EXAMS_COUNT + ") of student " + name);
+		}
 		return new Student(name, ADialog.isNumeric(group) ? Integer.parseInt(group)
 				: null, exams);
-	}
-
-	private void readXML(final Node node) {
-
-		final NodeList children = node.getChildNodes();
-		System.out.println(node);
-		if (children != null) {
-			if (children.getLength() > 1) {
-				System.out.println("fields:");
-				for (int i = 0; i < children.getLength(); ++i) {
-					final Node child = children.item(i);
-					if (child.getNodeType() == Node.ELEMENT_NODE) {
-						readXML(child);
-					}
-				}
-			} else {
-				final Node child = children.item(0);
-				if (child != null) {
-					System.out.println(child);
-				}
-			}
-		}
 	}
 
 	public void removeObserver() {
@@ -346,6 +381,17 @@ public class Model {
 		currPage = 0;
 	}
 
+	public void saveXML(final File file) {
+
+		final Document doc = createDocument();
+		if (doc != null) {
+			writeToFile(file, doc);
+		} else {
+			JOptionPane.showMessageDialog(null, Model.ERROR_ERROR_IN_CREATING_DOC);
+		}
+
+	}
+
 	public void setObserver(final JTextField observer) {
 
 		this.observer = observer;
@@ -361,20 +407,6 @@ public class Model {
 		}
 	}
 
-	private void start(String xml) throws TransformerFactoryConfigurationError {
-
-		xml = "c:\\students.xml";
-		final Document doc = parseForDOM(xml);
-		if (doc != null) {
-			final Element root = doc.getDocumentElement();
-			readXML(root);
-			writeToFIle(xml, doc);
-		} else {
-			System.out.println(Model.ERROR_FILE_INCORRECT);
-			JOptionPane.showMessageDialog(null, Model.ERROR_FILE_INCORRECT);
-		}
-	}
-
 	public void update() {
 
 		final Iterator<Controller> iterator = observers.iterator();
@@ -384,7 +416,12 @@ public class Model {
 
 	}
 
-	private void writeToFIle(final String xml, final Document doc)
+	private void writeToFile(final File file, final Document doc) {
+
+		writeToFile(file.getPath(), doc);
+	}
+
+	private void writeToFile(final String xml, final Document doc)
 			throws TransformerFactoryConfigurationError {
 
 		try {

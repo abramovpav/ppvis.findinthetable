@@ -62,13 +62,10 @@ public class Desktop extends JPanel {
 
 	private static final int			EXAM_COLUMNS_COUNT	= 2;
 	private static final int			INFO_COLUMNS_COUNT	= 2;
-
 	public static final int				EXAMS_COUNT			= 5;
-
 	public static final int				COLUMNS_COUNT		= Desktop.INFO_COLUMNS_COUNT
 																	+ Desktop.EXAMS_COUNT
 																	* Desktop.EXAM_COLUMNS_COUNT;
-
 	private static final String			DECREMENT			= "-";
 	private static final String			INCREMENT			= "+";
 	private static final String			BUTTON_NEXT			= "next";
@@ -77,15 +74,14 @@ public class Desktop extends JPanel {
 	private CellAttribute				cellAtt;
 	private MultiSpanCellTable			table;
 	private List<Controller>			observers;
-
 	private AttributiveCellTableModel	tableModel;
-
 	private Model						model;
 
 	public Desktop(final ContentPane contentPane) {
 
 		this.contentPane = contentPane;
 		initialize();
+		openXML(new File("c:\\123.xml"));
 	}
 
 	public void addObserver(final Controller observer) {
@@ -246,6 +242,11 @@ public class Desktop extends JPanel {
 		if (observers.contains(observer)) {
 			observers.remove(observer);
 		}
+	}
+
+	public void saveXML(final File file) {
+
+		model.saveXML(file);
 	}
 
 	private void setStudents(final AttributiveCellTableModel tableModel,

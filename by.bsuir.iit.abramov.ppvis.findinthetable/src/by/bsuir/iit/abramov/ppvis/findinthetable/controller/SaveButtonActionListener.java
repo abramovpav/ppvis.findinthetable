@@ -10,7 +10,7 @@ import by.bsuir.iit.abramov.ppvis.findinthetable.util.ExtJMenuItem;
 import by.bsuir.iit.abramov.ppvis.findinthetable.util.XMLFilter;
 import by.bsuir.iit.abramov.ppvis.findinthetable.view.Window;
 
-public class OpenButtonActionListener implements ActionListener, ButtonActionListener {
+public class SaveButtonActionListener implements ActionListener, ButtonActionListener {
 
 	@Override
 	public void action(final ActionEvent e) {
@@ -25,11 +25,10 @@ public class OpenButtonActionListener implements ActionListener, ButtonActionLis
 		final ExtJMenuItem item = (ExtJMenuItem) e.getSource();
 		final JFileChooser fn = new JFileChooser();
 		fn.setFileFilter(new XMLFilter());
-		final int ret = fn.showOpenDialog(null);
+		final int ret = fn.showSaveDialog(null);
 		if (ret == JFileChooser.APPROVE_OPTION) {
 			final File file = fn.getSelectedFile();
-			((Window) item.getContainer()).openXML(file);
-
+			((Window) item.getContainer()).saveXML(file);
 		}
 
 	}

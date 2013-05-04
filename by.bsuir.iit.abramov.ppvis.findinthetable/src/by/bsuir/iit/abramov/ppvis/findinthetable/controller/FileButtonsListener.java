@@ -21,8 +21,10 @@ public class FileButtonsListener implements ActionListener {
 													 */
 			case 1:
 				listener = new OpenButtonActionListener();
+			break;
+			case 2:
+				listener = new SaveButtonActionListener();
 			break;/*
-				 * case 2: listener = new SaveButtonActionListener(); break;
 				 * case 3: listener = new CloseButtonActionListener(); break;
 				 * case 4: listener = new ExitButtonActionListener(); break;
 				 */

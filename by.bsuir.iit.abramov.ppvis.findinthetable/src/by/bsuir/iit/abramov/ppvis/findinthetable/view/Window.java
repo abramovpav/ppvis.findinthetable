@@ -42,4 +42,9 @@ public class Window extends JFrame {
 
 		contentPane.openXML(file);
 	}
+
+	public void saveXML(final File file) {
+
+		contentPane.saveXML(file);
+	}
 }

@@ -20,4 +20,12 @@ public class Exam {
 		return name;
 	}
 
+	public boolean isEmpty() {
+
+		if ((name == null && mark == null) || name == "") {
+			return true;
+		}
+		return false;
+	}
+
 }

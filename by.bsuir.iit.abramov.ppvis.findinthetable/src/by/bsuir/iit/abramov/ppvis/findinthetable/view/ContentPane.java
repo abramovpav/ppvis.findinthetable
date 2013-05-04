@@ -39,4 +39,9 @@ public class ContentPane extends JPanel {
 
 		desktop.openXML(file);
 	}
+
+	public void saveXML(final File file) {
+
+		desktop.saveXML(file);
+	}
 }
