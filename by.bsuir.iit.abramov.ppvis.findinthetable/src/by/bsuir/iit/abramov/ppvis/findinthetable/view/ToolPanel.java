@@ -8,6 +8,7 @@ import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
 import by.bsuir.iit.abramov.ppvis.findinthetable.controller.EditButtonsListener;
+import by.bsuir.iit.abramov.ppvis.findinthetable.model.Student;
 import by.bsuir.iit.abramov.ppvis.findinthetable.util.MenuContent;
 
 public class ToolPanel extends JPanel {
@@ -19,6 +20,11 @@ public class ToolPanel extends JPanel {
 		this.contentPane = contentPane;
 		initialize();
 		createComponents();
+	}
+
+	public void addStudent(final Student student) {
+
+		contentPane.addStudent(student);
 	}
 
 	private void createComponents() {

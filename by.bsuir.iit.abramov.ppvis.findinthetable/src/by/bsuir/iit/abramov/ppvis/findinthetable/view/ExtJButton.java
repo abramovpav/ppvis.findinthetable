@@ -20,7 +20,7 @@ public class ExtJButton extends JButton {
 		return caption;
 	}
 
-	public JPanel getContainer() {
+	public final JPanel getContainer() {
 
 		return container;
 	}

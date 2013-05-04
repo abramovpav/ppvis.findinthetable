@@ -6,6 +6,8 @@ import java.awt.Color;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
+import by.bsuir.iit.abramov.ppvis.findinthetable.model.Student;
+
 public class ContentPane extends JPanel {
 	private final Menu	menu;
 	private ToolPanel	toolBar;
@@ -15,6 +17,11 @@ public class ContentPane extends JPanel {
 
 		this.menu = menu;
 		initialize();
+	}
+
+	public void addStudent(final Student student) {
+
+		desktop.addStudent(student);
 	}
 
 	private void initialize() {

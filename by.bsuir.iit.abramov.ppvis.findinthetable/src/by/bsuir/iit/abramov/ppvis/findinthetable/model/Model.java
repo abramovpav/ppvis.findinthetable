@@ -104,6 +104,11 @@ public class Model {
 		observer = null;
 	}
 
+	public void resetCurrPage() {
+
+		currPage = 0;
+	}
+
 	public void setObserver(final JTextField observer) {
 
 		this.observer = observer;

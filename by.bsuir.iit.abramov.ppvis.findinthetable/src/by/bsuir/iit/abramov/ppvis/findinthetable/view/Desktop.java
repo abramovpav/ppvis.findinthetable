@@ -74,6 +74,16 @@ public class Desktop extends JPanel {
 		initialize();
 	}
 
+	public void addStudent(final Student student) {
+
+		model.addStudent(student);
+		if (model.getCurrPage() < 0) {
+			model.resetCurrPage();
+		}
+		final Student[] pageOfStudents = model.getCurrPageOfStudent();
+		setStudents(tableModel, pageOfStudents);
+	}
+
 	private void combine(final CellAttribute cellAtt, final MultiSpanCellTable table,
 			final int[] columns, final int[] rows) {
 
