@@ -10,6 +10,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
 import by.bsuir.iit.abramov.ppvis.findinthetable.controller.EditButtonsListener;
+import by.bsuir.iit.abramov.ppvis.findinthetable.controller.FileButtonsListener;
 import by.bsuir.iit.abramov.ppvis.findinthetable.util.ExtJMenuItem;
 import by.bsuir.iit.abramov.ppvis.findinthetable.util.MenuContent;
 
@@ -39,7 +40,10 @@ public class Menu extends JMenuBar {
 				mnItems.put(menu.getItems()[j], mnItem);
 				mnButton.add(mnItem);
 				if (menu.getSection() == "Edit") {
-					mnItem.addActionListener(new EditButtonsListener(mnItem.getName()));
+					mnItem.addActionListener(new EditButtonsListener(mnItem.getText()));
+				}
+				if (menu.getSection() == "File") {
+					mnItem.addActionListener(new FileButtonsListener(mnItem.getText()));
 				}
 			}
 		}

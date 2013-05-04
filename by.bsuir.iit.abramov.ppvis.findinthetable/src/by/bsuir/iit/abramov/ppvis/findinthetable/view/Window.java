@@ -1,5 +1,7 @@
 package by.bsuir.iit.abramov.ppvis.findinthetable.view;
 
+import java.io.File;
+
 import javax.swing.JFrame;
 
 public class Window extends JFrame {
@@ -34,5 +36,10 @@ public class Window extends JFrame {
 		setContentPane(contentPane);
 		setBounds(Window.defaultX, Window.defaultY, Window.defaultWidth,
 				Window.defaultHeight);
+	}
+
+	public void openXML(final File file) {
+
+		contentPane.openXML(file);
 	}
 }

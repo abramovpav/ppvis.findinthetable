@@ -2,6 +2,7 @@ package by.bsuir.iit.abramov.ppvis.findinthetable.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.io.File;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -32,5 +33,10 @@ public class ContentPane extends JPanel {
 		add(desktop, BorderLayout.CENTER);
 		toolBar = new ToolPanel(this);
 		add(toolBar, BorderLayout.EAST);
+	}
+
+	public void openXML(final File file) {
+
+		desktop.openXML(file);
 	}
 }

@@ -3,6 +3,9 @@ package by.bsuir.iit.abramov.ppvis.findinthetable.view;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -11,6 +14,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 
+import by.bsuir.iit.abramov.ppvis.findinthetable.controller.Controller;
 import by.bsuir.iit.abramov.ppvis.findinthetable.model.Model;
 import by.bsuir.iit.abramov.ppvis.findinthetable.model.Student;
 import by.bsuir.iit.abramov.ppvis.findinthetable.model.table.AttributiveCellRenderer;
@@ -56,13 +60,23 @@ public class Desktop extends JPanel {
 		}
 	}
 
-	private static final String			DECREMENT	= "-";
-	private static final String			INCREMENT	= "+";
-	private static final String			BUTTON_NEXT	= "next";
-	private static final String			BUTTON_PREV	= "prev";
+	private static final int			EXAM_COLUMNS_COUNT	= 2;
+	private static final int			INFO_COLUMNS_COUNT	= 2;
+
+	public static final int				EXAMS_COUNT			= 5;
+
+	public static final int				COLUMNS_COUNT		= Desktop.INFO_COLUMNS_COUNT
+																	+ Desktop.EXAMS_COUNT
+																	* Desktop.EXAM_COLUMNS_COUNT;
+
+	private static final String			DECREMENT			= "-";
+	private static final String			INCREMENT			= "+";
+	private static final String			BUTTON_NEXT			= "next";
+	private static final String			BUTTON_PREV			= "prev";
 	private final ContentPane			contentPane;
 	private CellAttribute				cellAtt;
 	private MultiSpanCellTable			table;
+	private List<Controller>			observers;
 
 	private AttributiveCellTableModel	tableModel;
 
@@ -74,12 +88,16 @@ public class Desktop extends JPanel {
 		initialize();
 	}
 
+	public void addObserver(final Controller observer) {
+
+		if (!observers.contains(observer)) {
+			observers.add(observer);
+		}
+	}
+
 	public void addStudent(final Student student) {
 
 		model.addStudent(student);
-		if (model.getCurrPage() < 0) {
-			model.resetCurrPage();
-		}
 		final Student[] pageOfStudents = model.getCurrPageOfStudent();
 		setStudents(tableModel, pageOfStudents);
 	}
@@ -149,8 +167,8 @@ public class Desktop extends JPanel {
 		if (studentsInput != null) {
 			students = studentsInput;
 		}
-		final AttributiveCellTableModel tableModel = new AttributiveCellTableModel(12,
-				students);
+		final AttributiveCellTableModel tableModel = new AttributiveCellTableModel(
+				Desktop.COLUMNS_COUNT, students);
 		cellAtt = tableModel.getCellAttribute();
 		table = new MultiSpanCellTable(tableModel);
 		table.setCellSelectionEnabled(true);
@@ -184,50 +202,26 @@ public class Desktop extends JPanel {
 	public void initialize() {
 
 		setLayout(new BorderLayout(0, 0));
+		observers = new ArrayList<Controller>();
 
 		model = new Model();
 
-		/*
-		 * model.addStudent(new Student("Abramov", new Integer(121702), new
-		 * Exam("Math", 8), new Exam("English", 10))); model.addStudent(new
-		 * Student("Petrov1", new Integer(121702), new Exam("Math", 8), new
-		 * Exam("English", 10))); model.addStudent(new Student("Petrov2", new
-		 * Integer(121702), new Exam("Math", 8), new Exam("English", 10)));
-		 * model.addStudent(new Student("Petrov3", new Integer(121702), new
-		 * Exam("Math", 8), new Exam("English", 10))); model.addStudent(new
-		 * Student("Petrov4", new Integer(121702), new Exam("Math", 8), new
-		 * Exam("English", 10))); model.addStudent(new Student("Petrov5", new
-		 * Integer(121702), new Exam("Math", 8), new Exam("English", 10)));
-		 * model.addStudent(new Student("Petrov6", new Integer(121702), new
-		 * Exam("Math", 8), new Exam("English", 10))); model.addStudent(new
-		 * Student("Petrov7", new Integer(121702), new Exam("Math", 8), new
-		 * Exam("English", 10))); model.addStudent(new Student("Petrov8", new
-		 * Integer(121702), new Exam("Math", 8), new Exam("English", 10)));
-		 * model.addStudent(new Student("Petrov9", new Integer(121702), new
-		 * Exam("Math", 8), new Exam("English", 10))); model.addStudent(new
-		 * Student("Petrov10", new Integer(121702), new Exam("Math", 8), new
-		 * Exam("English", 10))); model.addStudent(new Student("Petrov11", new
-		 * Integer(121702), new Exam(null, null), new Exam("English", 10)));
-		 * model.addStudent(new Student("Petrov12", new Integer(121702), new
-		 * Exam(null, null), new Exam("English", 10))); model.addStudent(new
-		 * Student("Petrov13", new Integer(121702), new Exam(null, null), new
-		 * Exam("English", 10))); model.addStudent(new Student("Petrov14", new
-		 * Integer(121702), new Exam(null, null), new Exam("English", 10)));
-		 * model.addStudent(new Student("Petrov15", new Integer(121702), new
-		 * Exam(null, null), new Exam("English", 10))); model.addStudent(new
-		 * Student("Petrov16", new Integer(121702), new Exam(null, null), new
-		 * Exam("English", 10))); model.addStudent(new Student("Petrov17", new
-		 * Integer(121702), new Exam(null, null), new Exam("English", 10)));
-		 * model.addStudent(new Student("Petrov18", new Integer(121702), new
-		 * Exam(null, null), new Exam("English", 10)));
-		 */
+		final Controller controller = new Controller(model, this);
+		model.addObserver(controller);
+		addObserver(controller);
+
 		final Student[] students = model.getNextPageOfStudents();
 
 		tableModel = createTable(students);
 		prepareTable();
 
 		createButtonPanel(model, tableModel);
+		// openXML(new File("c:\\students.xml"));
+	}
 
+	public void openXML(final File file) {
+
+		model.openXML(file);
 	}
 
 	private void prepareTable() {
@@ -239,6 +233,19 @@ public class Desktop extends JPanel {
 			i += 2;
 		}
 		combineCellInExamCaption();
+	}
+
+	public void refresh() {
+
+		final Student[] pageOfStudents = model.getCurrPageOfStudent();
+		setStudents(tableModel, pageOfStudents);
+	}
+
+	public void removeObserver(final Controller observer) {
+
+		if (observers.contains(observer)) {
+			observers.remove(observer);
+		}
 	}
 
 	private void setStudents(final AttributiveCellTableModel tableModel,
