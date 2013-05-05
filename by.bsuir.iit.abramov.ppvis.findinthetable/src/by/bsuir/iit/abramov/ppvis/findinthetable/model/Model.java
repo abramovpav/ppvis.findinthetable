@@ -118,6 +118,16 @@ public class Model {
 		return doc;
 	}
 
+	public void deleteStudents(final Student[] delStudents) {
+
+		for (int i = 0; i < delStudents.length; ++i) {
+			if (students.contains(delStudents[i])) {
+				students.remove(delStudents[i]);
+			}
+		}
+		update();
+	}
+
 	public final int getCurrPage() {
 
 		return currPage;

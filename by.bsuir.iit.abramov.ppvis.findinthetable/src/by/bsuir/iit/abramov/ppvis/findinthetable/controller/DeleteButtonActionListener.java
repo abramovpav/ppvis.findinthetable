@@ -3,6 +3,10 @@ package by.bsuir.iit.abramov.ppvis.findinthetable.controller;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import by.bsuir.iit.abramov.ppvis.findinthetable.util.ActionButton;
+import by.bsuir.iit.abramov.ppvis.findinthetable.view.ContentPane;
+import by.bsuir.iit.abramov.ppvis.findinthetable.view.FindDialog;
+
 public class DeleteButtonActionListener implements ActionListener, ButtonActionListener {
 
 	@Override
@@ -15,8 +19,15 @@ public class DeleteButtonActionListener implements ActionListener, ButtonActionL
 	@Override
 	public void actionPerformed(final ActionEvent e) {
 
-		// TODO Auto-generated method stub
-		System.out.println("DeleteButtonActionListener");
+		System.out.println("FindButtonActionListener");
+		final ActionButton button = (ActionButton) e.getSource();
+		System.out.println("AddButtonActionListener");
+		final FindDialog dialog = new FindDialog((ContentPane) button.getContainer(),
+				FindDialog.BUTTON_DELETE);
+		dialog.setModal(true);
+		dialog.setVisible(true);
+		// final Student student = dialog.getStudent();
+		// ((ToolPanel) button.getContainer()).addStudent(student);
 	}
 
 }

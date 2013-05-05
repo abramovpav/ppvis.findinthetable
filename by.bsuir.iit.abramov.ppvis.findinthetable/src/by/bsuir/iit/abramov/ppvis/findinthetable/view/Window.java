@@ -26,11 +26,22 @@ public class Window extends JFrame {
 		initialize();
 	}
 
+	public void exit() {
+
+		setVisible(false);
+		dispose();
+	}
+
+	public final ContentPane getContPane() {
+
+		return contentPane;
+	}
+
 	private void initialize() {
 
-		menu = new Menu(this);
+		contentPane = new ContentPane(this);
+		menu = new Menu(contentPane);
 		setJMenuBar(menu);
-		contentPane = new ContentPane(menu);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		// setExtendedState(Frame.MAXIMIZED_BOTH);
 		setContentPane(contentPane);

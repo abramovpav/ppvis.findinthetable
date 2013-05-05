@@ -1,7 +1,7 @@
 package by.bsuir.iit.abramov.ppvis.findinthetable.util;
 
 public enum MenuContent {
-	File("File", "New", "Open...", "Save as...", "Close", "Exit"), Edit("Edit", "Add...",
+	File("File", "Open...", "Save as...", "Close", "Exit"), Edit("Edit", "Add...",
 			"Delete...", "Find..."), ABOUT("About", "Author");
 
 	private String		section;

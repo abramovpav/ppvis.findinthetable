@@ -6,6 +6,8 @@ import java.io.File;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -13,19 +15,41 @@ import by.bsuir.iit.abramov.ppvis.findinthetable.model.Student;
 import by.bsuir.iit.abramov.ppvis.findinthetable.util.CoupleExt;
 
 public class ContentPane extends JPanel {
-	private final Menu	menu;
-	private ToolPanel	toolBar;
-	private Desktop		desktop;
+	private ToolPanel		toolBar;
+	private Desktop			desktop;
+	private final JFrame	parent;
 
-	public ContentPane(final Menu menu) {
+	public ContentPane(final JFrame parent) {
 
-		this.menu = menu;
+		this.parent = parent;
 		initialize();
+	}
+
+	public void about() {
+
+		JOptionPane.showMessageDialog(null,
+				"Автор: Абрамов Павел. \ne-mail: abramovpav@gmail.com", "Об авторе",
+				JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	public void addStudent(final Student student) {
 
 		desktop.addStudent(student);
+	}
+
+	public void close() {
+
+		desktop.close();
+	}
+
+	public void deleteStudents(final Student[] students) {
+
+		desktop.deleteStudents(students);
+	}
+
+	public void exit() {
+
+		((Window) parent).exit();
 	}
 
 	private void initialize() {

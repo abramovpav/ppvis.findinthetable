@@ -3,8 +3,8 @@ package by.bsuir.iit.abramov.ppvis.findinthetable.controller;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import by.bsuir.iit.abramov.ppvis.findinthetable.util.ActionButton;
 import by.bsuir.iit.abramov.ppvis.findinthetable.view.ContentPane;
-import by.bsuir.iit.abramov.ppvis.findinthetable.view.ExtJButton;
 import by.bsuir.iit.abramov.ppvis.findinthetable.view.FindDialog;
 
 public class FindButtonActionListener implements ActionListener, ButtonActionListener {
@@ -20,9 +20,10 @@ public class FindButtonActionListener implements ActionListener, ButtonActionLis
 	public void actionPerformed(final ActionEvent e) {
 
 		System.out.println("FindButtonActionListener");
-		final ExtJButton button = (ExtJButton) e.getSource();
+		final ActionButton button = (ActionButton) e.getSource();
 		System.out.println("AddButtonActionListener");
-		final FindDialog dialog = new FindDialog((ContentPane) button.getContainer());
+		final FindDialog dialog = new FindDialog((ContentPane) button.getContainer(),
+				FindDialog.BUTTON_SEARCH);
 		dialog.setModal(true);
 		dialog.setVisible(true);
 		// final Student student = dialog.getStudent();

@@ -6,9 +6,9 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
-import by.bsuir.iit.abramov.ppvis.findinthetable.util.ExtJMenuItem;
+import by.bsuir.iit.abramov.ppvis.findinthetable.util.ActionButton;
 import by.bsuir.iit.abramov.ppvis.findinthetable.util.XMLFilter;
-import by.bsuir.iit.abramov.ppvis.findinthetable.view.Window;
+import by.bsuir.iit.abramov.ppvis.findinthetable.view.ContentPane;
 
 public class OpenButtonActionListener implements ActionListener, ButtonActionListener {
 
@@ -22,13 +22,14 @@ public class OpenButtonActionListener implements ActionListener, ButtonActionLis
 	@Override
 	public void actionPerformed(final ActionEvent e) {
 
-		final ExtJMenuItem item = (ExtJMenuItem) e.getSource();
+		final ActionButton button = (ActionButton) e.getSource();
 		final JFileChooser fn = new JFileChooser();
 		fn.setFileFilter(new XMLFilter());
 		final int ret = fn.showOpenDialog(null);
 		if (ret == JFileChooser.APPROVE_OPTION) {
 			final File file = fn.getSelectedFile();
-			((Window) item.getContainer()).openXML(file);
+			final ContentPane cont = ((ContentPane) button.getContainer());
+			cont.openXML(file);
 
 		}
 

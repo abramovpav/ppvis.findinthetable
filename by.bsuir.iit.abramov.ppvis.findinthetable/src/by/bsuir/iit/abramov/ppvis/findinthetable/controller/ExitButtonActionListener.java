@@ -3,12 +3,10 @@ package by.bsuir.iit.abramov.ppvis.findinthetable.controller;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import by.bsuir.iit.abramov.ppvis.findinthetable.model.Student;
 import by.bsuir.iit.abramov.ppvis.findinthetable.util.ActionButton;
-import by.bsuir.iit.abramov.ppvis.findinthetable.view.ADialog;
 import by.bsuir.iit.abramov.ppvis.findinthetable.view.ContentPane;
 
-public class AddButtonActionListener implements ActionListener, ButtonActionListener {
+public class ExitButtonActionListener implements ActionListener, ButtonActionListener {
 
 	@Override
 	public void action(final ActionEvent e) {
@@ -21,12 +19,7 @@ public class AddButtonActionListener implements ActionListener, ButtonActionList
 	public void actionPerformed(final ActionEvent e) {
 
 		final ActionButton button = (ActionButton) e.getSource();
-		System.out.println("AddButtonActionListener");
-		final ADialog dialog = new ADialog();
-		dialog.setModal(true);
-		dialog.setVisible(true);
-		final Student student = dialog.getStudent();
-		((ContentPane) button.getContainer()).addStudent(student);
+		((ContentPane) button.getContainer()).exit();
 
 	}
 

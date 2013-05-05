@@ -4,11 +4,12 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 
+import by.bsuir.iit.abramov.ppvis.findinthetable.controller.AboutButtonsListener;
 import by.bsuir.iit.abramov.ppvis.findinthetable.controller.EditButtonsListener;
 import by.bsuir.iit.abramov.ppvis.findinthetable.controller.FileButtonsListener;
 import by.bsuir.iit.abramov.ppvis.findinthetable.util.ExtJMenuItem;
@@ -17,9 +18,9 @@ import by.bsuir.iit.abramov.ppvis.findinthetable.util.MenuContent;
 public class Menu extends JMenuBar {
 	private Map<MenuContent, JMenu>	mnButtons;
 	private Map<String, JMenuItem>	mnItems;
-	private final JFrame			parent;
+	private final JPanel			parent;
 
-	public Menu(final JFrame parent) {
+	public Menu(final JPanel parent) {
 
 		super();
 		this.parent = parent;
@@ -44,6 +45,9 @@ public class Menu extends JMenuBar {
 				}
 				if (menu.getSection() == "File") {
 					mnItem.addActionListener(new FileButtonsListener(mnItem.getText()));
+				}
+				if (menu.getSection() == "About") {
+					mnItem.addActionListener(new AboutButtonsListener(mnItem.getText()));
 				}
 			}
 		}

@@ -84,7 +84,6 @@ public class Desktop extends JPanel {
 
 		this.contentPane = contentPane;
 		initialize();
-		openXML(new File("c:\\123.xml"));
 	}
 
 	public void addObserver(final Controller observer) {
@@ -99,6 +98,13 @@ public class Desktop extends JPanel {
 		model.addStudent(student);
 		final Student[] pageOfStudents = model.getCurrPageOfStudent();
 		setStudents(tableModel, pageOfStudents);
+	}
+
+	public void close() {
+
+		final Student[] pageOfStudents = {};
+		setStudents(tableModel, pageOfStudents);
+
 	}
 
 	private void combine(final CellAttribute cellAtt, final MultiSpanCellTable table,
@@ -198,6 +204,11 @@ public class Desktop extends JPanel {
 		viewSizePanel.add(button, BorderLayout.EAST);
 	}
 
+	public void deleteStudents(final Student[] students) {
+
+		model.deleteStudents(students);
+	}
+
 	public void initialize() {
 
 		setLayout(new BorderLayout(0, 0));
@@ -215,7 +226,7 @@ public class Desktop extends JPanel {
 		prepareTable();
 
 		createButtonPanel(model, tableModel);
-		// openXML(new File("c:\\students.xml"));
+		openXML(new File("c:\\students.xml"));
 	}
 
 	public void openXML(final File file) {
@@ -264,11 +275,11 @@ public class Desktop extends JPanel {
 				name = "";
 				for (int i = 0; i < list.size(); ++i) {
 					final CoupleExt<String, JTextField> item = list.get(i);
-					if (item.getField1() == "name") {
+					if (item.getField1() == FindDialog.NAME) {
 						name = item.getField2().getText();
-					} else if (item.getField1() == "from") {
+					} else if (item.getField1() == FindDialog.FROM) {
 						botStr = item.getField2().getText();
-					} else if (item.getField1() == "to") {
+					} else if (item.getField1() == FindDialog.TO) {
 						topStr = item.getField2().getText();
 					}
 				}
@@ -281,9 +292,9 @@ public class Desktop extends JPanel {
 				groupStr = "";
 				for (int i = 0; i < list.size(); ++i) {
 					final CoupleExt<String, JTextField> item = list.get(i);
-					if (item.getField1() == "name") {
+					if (item.getField1() == FindDialog.NAME) {
 						name = item.getField2().getText();
-					} else if (item.getField1() == "group") {
+					} else if (item.getField1() == FindDialog.GROUP) {
 						groupStr = item.getField2().getText();
 					}
 				}
@@ -299,13 +310,13 @@ public class Desktop extends JPanel {
 				botStr = "";
 				for (int i = 0; i < list.size(); ++i) {
 					final CoupleExt<String, JTextField> item = list.get(i);
-					if (item.getField1() == "name") {
+					if (item.getField1() == FindDialog.NAME) {
 						name = item.getField2().getText();
-					} else if (item.getField1() == "exam") {
+					} else if (item.getField1() == FindDialog.EXAM) {
 						examStr = item.getField2().getText();
-					} else if (item.getField1() == "from") {
+					} else if (item.getField1() == FindDialog.FROM) {
 						botStr = item.getField2().getText();
-					} else if (item.getField1() == "to") {
+					} else if (item.getField1() == FindDialog.TO) {
 						topStr = item.getField2().getText();
 					}
 				}
@@ -334,14 +345,14 @@ public class Desktop extends JPanel {
 	}
 
 	private void setStudents(final AttributiveCellTableModel tableModel,
-			final Student[] pageOfStudents) {
+			final Student[] inputPageOfStudents) {
 
+		Student[] pageOfStudents = inputPageOfStudents;
 		if (pageOfStudents == null) {
-			System.out.println("null");
-		} else {
-			for (int i = 0; i < pageOfStudents.length; ++i) {
-				System.out.println(pageOfStudents[i].getName());
-			}
+			System.out.println("List of students is empty");
+			pageOfStudents = new Student[0];
+		}
+		{
 			tableModel.setStudentsList(pageOfStudents);
 			cellAtt = tableModel.getCellAttribute();
 			prepareTable();

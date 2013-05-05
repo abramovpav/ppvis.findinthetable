@@ -3,7 +3,9 @@ package by.bsuir.iit.abramov.ppvis.findinthetable.view;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-public class ExtJButton extends JButton {
+import by.bsuir.iit.abramov.ppvis.findinthetable.util.ActionButton;
+
+public class ExtJButton extends JButton implements ActionButton {
 	private final JPanel	container;
 	private final String	caption;
 
@@ -20,6 +22,7 @@ public class ExtJButton extends JButton {
 		return caption;
 	}
 
+	@Override
 	public final JPanel getContainer() {
 
 		return container;

@@ -5,32 +5,22 @@ import java.awt.event.ActionListener;
 
 import by.bsuir.iit.abramov.ppvis.findinthetable.util.MenuContent;
 
-public class FileButtonsListener implements ActionListener {
+public class AboutButtonsListener implements ActionListener {
 
 	private final String				name;
 	private final ButtonActionListener	listener;
 
-	public FileButtonsListener(final String name) {
+	public AboutButtonsListener(final String name) {
 
 		this.name = name;
 
 		switch (MenuContent.File.getItemIndex(name)) {
 			case 0:
-				listener = new OpenButtonActionListener();
+				listener = new AboutButtonActionListener();
 			break;
-			case 1:
-				listener = new SaveButtonActionListener();
-			break;
-			case 2:
-				listener = new CloseButtonActionListener();
-			break;
-			case 3:
-				listener = new ExitButtonActionListener();
-			break;
-
 			default:
 				System.out.println(name);
-				listener = new FindButtonActionListener();
+				listener = new AboutButtonActionListener();
 		}
 	}
 
