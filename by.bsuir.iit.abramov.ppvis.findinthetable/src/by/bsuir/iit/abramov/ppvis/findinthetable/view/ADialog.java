@@ -19,36 +19,9 @@ import javax.swing.border.EtchedBorder;
 
 import by.bsuir.iit.abramov.ppvis.findinthetable.model.Exam;
 import by.bsuir.iit.abramov.ppvis.findinthetable.model.Student;
+import by.bsuir.iit.abramov.ppvis.findinthetable.util.Couple;
 
 public class ADialog extends JDialog {
-
-	class Couple<T> {
-		private final T		field1;
-		private final T		field2;
-		private final int	num;
-
-		public Couple(final T field1, final T field2, final int num) {
-
-			this.field2 = field2;
-			this.field1 = field1;
-			this.num = num;
-		}
-
-		public final T getField1() {
-
-			return field1;
-		}
-
-		public final T getField2() {
-
-			return field2;
-		}
-
-		public final int getNum() {
-
-			return num;
-		}
-	}
 
 	private static final String	TITLE						= "Add student";
 	private static final String	LABEL_STUDENT_GROUP			= "Group";

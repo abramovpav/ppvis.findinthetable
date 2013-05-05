@@ -30,6 +30,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 import by.bsuir.iit.abramov.ppvis.findinthetable.controller.Controller;
+import by.bsuir.iit.abramov.ppvis.findinthetable.util.Util;
 import by.bsuir.iit.abramov.ppvis.findinthetable.view.ADialog;
 import by.bsuir.iit.abramov.ppvis.findinthetable.view.Desktop;
 
@@ -392,6 +393,55 @@ public class Model {
 
 	}
 
+	public Vector<Student> search(final String name, final Integer group) {
+
+		final Vector<Student> studentsVector = new Vector<Student>();
+		for (final Student student : students) {
+			if (student.getName().indexOf(name) != -1) {
+				if (group != null) {
+					if (student.getGroup().toString().indexOf(group.toString()) != -1) {
+						studentsVector.add(student);
+					}
+				} else {
+					studentsVector.add(student);
+				}
+			}
+		}
+		return studentsVector;
+	}
+
+	public Vector<Student> search(final String name, final String botStr,
+			final String topStr) {
+
+		final Vector<Student> studentsVector = new Vector<Student>();
+		final int bot = Util.isNumeric(botStr) ? Integer.parseInt(botStr) : 0;
+		final int top = Util.isNumeric(topStr) ? Integer.parseInt(topStr) : 10;
+		for (final Student student : students) {
+			if (student.getAverageMark() >= bot && student.getAverageMark() <= top) {
+				if (student.getName().indexOf(name) != -1) {
+					studentsVector.add(student);
+				}
+			}
+		}
+		return studentsVector;
+	}
+
+	public Vector<Student> search(final String name, final String examStr,
+			final String botStr, final String topStr) {
+
+		final Vector<Student> studentsVector = new Vector<Student>();
+		final int bot = Util.isNumeric(botStr) ? Integer.parseInt(botStr) : 0;
+		final int top = Util.isNumeric(topStr) ? Integer.parseInt(topStr) : 10;
+		for (final Student student : students) {
+			if (student.isExam(examStr) >= bot && student.isExam(examStr) <= top) {
+				if (student.getName().indexOf(name) != -1) {
+					studentsVector.add(student);
+				}
+			}
+		}
+		return studentsVector;
+	}
+
 	public void setObserver(final JTextField observer) {
 
 		this.observer = observer;
@@ -441,5 +491,4 @@ public class Model {
 			System.out.println(ioe.getMessage());
 		}
 	}
-
 }

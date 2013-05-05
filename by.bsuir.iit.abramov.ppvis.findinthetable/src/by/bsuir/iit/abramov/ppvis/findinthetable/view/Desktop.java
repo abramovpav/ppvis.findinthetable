@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -22,6 +23,8 @@ import by.bsuir.iit.abramov.ppvis.findinthetable.model.table.AttributiveCellTabl
 import by.bsuir.iit.abramov.ppvis.findinthetable.model.table.CellAttribute;
 import by.bsuir.iit.abramov.ppvis.findinthetable.model.table.CellSpan;
 import by.bsuir.iit.abramov.ppvis.findinthetable.model.table.MultiSpanCellTable;
+import by.bsuir.iit.abramov.ppvis.findinthetable.util.CoupleExt;
+import by.bsuir.iit.abramov.ppvis.findinthetable.util.Util;
 
 public class Desktop extends JPanel {
 	class ButtonActionListener implements ActionListener {
@@ -247,6 +250,87 @@ public class Desktop extends JPanel {
 	public void saveXML(final File file) {
 
 		model.saveXML(file);
+	}
+
+	public Student[] search(final List<CoupleExt<String, JTextField>> list, final int num) {
+
+		Vector<Student> studentsVector = new Vector<Student>();
+		String name, groupStr, topStr, botStr, examStr;
+		switch (num) {
+			case 1:
+				System.out.println("search #1");
+				topStr = "";
+				botStr = "";
+				name = "";
+				for (int i = 0; i < list.size(); ++i) {
+					final CoupleExt<String, JTextField> item = list.get(i);
+					if (item.getField1() == "name") {
+						name = item.getField2().getText();
+					} else if (item.getField1() == "from") {
+						botStr = item.getField2().getText();
+					} else if (item.getField1() == "to") {
+						topStr = item.getField2().getText();
+					}
+				}
+				studentsVector = search(name, botStr, topStr);
+
+			break;
+			case 2:
+				System.out.println("search #2");
+				name = "";
+				groupStr = "";
+				for (int i = 0; i < list.size(); ++i) {
+					final CoupleExt<String, JTextField> item = list.get(i);
+					if (item.getField1() == "name") {
+						name = item.getField2().getText();
+					} else if (item.getField1() == "group") {
+						groupStr = item.getField2().getText();
+					}
+				}
+				final Integer group = Util.isNumeric(groupStr) ? Integer
+						.parseInt(groupStr) : null;
+				studentsVector = search(name, group);
+			break;
+			case 3:
+				System.out.println("search #3");
+				name = "";
+				examStr = "";
+				topStr = "";
+				botStr = "";
+				for (int i = 0; i < list.size(); ++i) {
+					final CoupleExt<String, JTextField> item = list.get(i);
+					if (item.getField1() == "name") {
+						name = item.getField2().getText();
+					} else if (item.getField1() == "exam") {
+						examStr = item.getField2().getText();
+					} else if (item.getField1() == "from") {
+						botStr = item.getField2().getText();
+					} else if (item.getField1() == "to") {
+						topStr = item.getField2().getText();
+					}
+				}
+
+				studentsVector = search(name, examStr, botStr, topStr);
+			break;
+		}
+		return Util.getStudents(studentsVector);
+	}
+
+	public Vector<Student> search(final String name, final Integer group) {
+
+		return model.search(name, group);
+	}
+
+	public Vector<Student> search(final String name, final String botStr,
+			final String topStr) {
+
+		return model.search(name, botStr, topStr);
+	}
+
+	public Vector<Student> search(final String name, final String examStr,
+			final String botStr, final String topStr) {
+
+		return model.search(name, examStr, botStr, topStr);
 	}
 
 	private void setStudents(final AttributiveCellTableModel tableModel,

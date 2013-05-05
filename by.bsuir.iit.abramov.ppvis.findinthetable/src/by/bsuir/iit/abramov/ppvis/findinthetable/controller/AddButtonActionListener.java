@@ -5,8 +5,8 @@ import java.awt.event.ActionListener;
 
 import by.bsuir.iit.abramov.ppvis.findinthetable.model.Student;
 import by.bsuir.iit.abramov.ppvis.findinthetable.view.ADialog;
+import by.bsuir.iit.abramov.ppvis.findinthetable.view.ContentPane;
 import by.bsuir.iit.abramov.ppvis.findinthetable.view.ExtJButton;
-import by.bsuir.iit.abramov.ppvis.findinthetable.view.ToolPanel;
 
 public class AddButtonActionListener implements ActionListener, ButtonActionListener {
 
@@ -26,7 +26,7 @@ public class AddButtonActionListener implements ActionListener, ButtonActionList
 		dialog.setModal(true);
 		dialog.setVisible(true);
 		final Student student = dialog.getStudent();
-		((ToolPanel) button.getContainer()).addStudent(student);
+		((ContentPane) button.getContainer()).addStudent(student);
 
 	}
 
