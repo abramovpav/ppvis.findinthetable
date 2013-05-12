@@ -1,6 +1,5 @@
 package by.bsuir.iit.abramov.ppvis.findinthetable.controller;
 
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 

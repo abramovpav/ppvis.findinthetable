@@ -10,10 +10,7 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -23,44 +20,35 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 import by.bsuir.iit.abramov.ppvis.findinthetable.controller.Controller;
 import by.bsuir.iit.abramov.ppvis.findinthetable.util.Util;
-import by.bsuir.iit.abramov.ppvis.findinthetable.view.ADialog;
-import by.bsuir.iit.abramov.ppvis.findinthetable.view.Desktop;
-import by.bsuir.iit.abramov.ppvis.findinthetable.view.Window;
 
 public class Model {
 	class Bool {
 		public boolean	bool;
 	}
 
-	private static final String		PROBLEM_PARSING_THE_FILE			= "problem_parsing_the_file";
-	private static final String		ERROR_ERROR_IN_CREATING_DOC			= "error_in_creating_doc";
-	private static final String		ERROR_INCORRECT_QUANTITY_IN_EXAMS	= "error_incorrect_quantity";
-	static final String				FIELD_MARK							= "mark";
-	private static final String		FIELD_STUDENTS						= "students";
-	private static final String		FIELD_STUDENT						= "student";
-	private static final String		FIELD_EXAM							= "exam";
-	private static final String		FIELD_EXAMS							= "exams";
-	static final String				FIELD_GROUP							= "group";
-	static final String				FIELD_NAME							= "name";
+	public static final String		PROBLEM_PARSING_THE_FILE			= "problem_parsing_the_file";
+	public static final String		ERROR_ERROR_IN_CREATING_DOC			= "error_in_creating_doc";
+	public static final String		ERROR_INCORRECT_QUANTITY_IN_EXAMS	= "error_incorrect_quantity";
+	public final static String		FIELD_MARK							= "mark";
+	public static final String		FIELD_STUDENTS						= "students";
+	public static final String		FIELD_STUDENT						= "student";
+	public static final String		FIELD_EXAM							= "exam";
+	public static final String		FIELD_EXAMS							= "exams";
+	public static final String		FIELD_GROUP							= "group";
+	public static final String		FIELD_NAME							= "name";
 
 	private static final String		ERROR_FILE_INCORRECT				= "error_file_incorrect";
-	private static Logger				LOG	= Logger.getLogger(Model.class.getName());
-	private final List<Student>	students;
+	private static Logger			LOG									= Logger.getLogger(Model.class
+																				.getName());
+	private final List<Student>		students;
 	private JTextField				observer;
 	private JTextField				maxObserver;
 	private final List<Controller>	observers;
 	public static final int			DEFAULT_VIEWSIZE					= 10;
-	private Integer					viewSize							= DEFAULT_VIEWSIZE;
+	private Integer					viewSize							= Model.DEFAULT_VIEWSIZE;
 
 	private int						currPage							= -1;
 
@@ -84,50 +72,10 @@ public class Model {
 		}
 		notifyMaxObserver();
 	}
-	
-	public int getStudentsCount() {
-		return students.size();
-	}
-
-	public Document createDocument() {
-
-		Document doc = null;
-		try {
-			final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			dbf.setValidating(true);
-			final DocumentBuilder db = dbf.newDocumentBuilder();
-			doc = db.newDocument();
-			final Element root = doc.createElement(FIELD_STUDENTS);
-			for (Student student : students) {
-				final Element studentElement = doc.createElement(FIELD_STUDENT);
-				root.appendChild(studentElement);
-				newElement(doc, FIELD_NAME, studentElement, student.getName());
-				newElement(doc, FIELD_GROUP, studentElement, student.getGroup()
-						.toString());
-				final List<Exam> exams = student.getExams();
-				final Element examsElement = doc.createElement(FIELD_EXAMS);
-				studentElement.appendChild(examsElement);
-				for (Exam exam : exams) {
-					if (!exam.isEmpty()) {
-						final Element examElement = doc.createElement(FIELD_EXAM);
-						examsElement.appendChild(examElement);
-						newElement(doc, FIELD_NAME, examElement,
-								exam.getName() != null ? exam.getName() : " ");
-						newElement(doc, FIELD_MARK, examElement,
-								exam.getMark() != null ? exam.getMark().toString() : " ");
-					}
-				}
-			}
-			doc.appendChild(root);
-		} catch (final Exception e) {
-			LOG.log(Level.SEVERE, Window.geti18nString(PROBLEM_PARSING_THE_FILE) + e.getMessage(), e);
-		}
-		return doc;
-	}
 
 	public void deleteStudents(final List<Student> delStudents) {
 
-		for (Student student : delStudents) {
+		for (final Student student : delStudents) {
 			if (students.contains(student)) {
 				students.remove(student);
 			}
@@ -153,22 +101,10 @@ public class Model {
 
 		final double max = (double) students.size() / (double) viewSize;
 		int result = students.size() / viewSize;
-		if (max % 2 != 0 && max % 2 != 1) {
+		if (isNeedRounding(max)) {
 			result += 1;
 		}
 		return result;
-	}
-	
-	public void leafNext() {
-		if (currPage < getMaxPage() - 1) {
-			currPage++;
-		}
-	}
-	
-	public void leafPrev() {
-		if (currPage > 0) {
-			currPage--;
-		}
 	}
 
 	public List<Student> getNextPageOfStudents() {
@@ -180,12 +116,9 @@ public class Model {
 	}
 
 	private List<Student> getPageOfStudents() {
-		final List<Student> pageStudents  = new Vector<Student>();
-		
-		if (students.size() == 0) {
-			return pageStudents;
-		}
-		if (currPage < 0 || currPage >= getMaxPage()) {
+
+		final List<Student> pageStudents = new Vector<Student>();
+		if (students.size() == 0 || currPage < 0 || currPage >= getMaxPage()) {
 			return pageStudents;
 		}
 		int size = 0;
@@ -211,20 +144,40 @@ public class Model {
 		return getPageOfStudents();
 	}
 
+	public int getStudentsCount() {
+
+		return students.size();
+	}
+
 	public final Integer getViewSize() {
 
 		return viewSize;
 	}
 
-	private void newElement(final Document doc, final String name,
-			final Element studentElement, final String text) {
+	private boolean isNeedRounding(final double max) {
 
-		Element element;
-		Text textElement;
-		element = doc.createElement(name);
-		textElement = doc.createTextNode(text);
-		studentElement.appendChild(element);
-		element.appendChild(textElement);
+		return max % 2 != 0 && max % 2 != 1;
+	}
+
+	public void leafNext() {
+
+		if (currPage < getMaxPage() - 1) {
+			currPage++;
+		}
+	}
+
+	public void leafPrev() {
+
+		if (currPage > 0) {
+			currPage--;
+		}
+	}
+
+	public void notifyMaxObserver() {
+
+		if (maxObserver != null) {
+			maxObserver.setText(Integer.toString(students.size()));
+		}
 	}
 
 	public void notifyObserver() {
@@ -232,185 +185,14 @@ public class Model {
 		if (observer != null) {
 			observer.setText(Integer.toString(viewSize));
 		}
-		
-	}
-	
-	public void notifyMaxObserver() {
-		if (maxObserver != null) {
-			maxObserver.setText(Integer.toString(students.size()));
-		}
+
 	}
 
 	public void openXML(final File file) {
-		/*
-		final Document doc = parseForDOM(file);
-		parse(doc);
-		update();*/
-		XMLReader reader = new XMLReader();
+
+		final XMLReader reader = new XMLReader();
 		reader.openXML(file, this);
-		
-	}
-	
-	public void setStudents(List<Student> students) {
-		this.students.clear();
-		this.students.addAll(students);
-		notifyMaxObserver();
-	}
 
-	private void parse(final Document doc) {
-
-		final Vector<Student> students = new Vector<Student>();
-		final Element root = doc.getDocumentElement();
-		final NodeList nodeStudents = root.getChildNodes();
-		if (nodeStudents != null) {
-			if (nodeStudents.getLength() != 0) {
-				for (int i = 0; i < nodeStudents.getLength(); ++i) {
-					final Node nodeStudent = nodeStudents.item(i);
-					if (nodeStudent != null) {
-						if (nodeStudent.getNodeType() == Node.ELEMENT_NODE) {
-							final Student student = parseStudent(nodeStudent);
-							students.add(student);
-						}
-					}
-				}
-			}
-		}
-		this.students.clear();
-		this.students.addAll(students);
-	}
-
-	private Exam parseExam(final Node exam) {
-
-		String name = "";
-		String mark = "";
-		final NodeList fields = exam.getChildNodes();
-		for (int i = 0; i < fields.getLength(); ++i) {
-			final Node field = fields.item(i);
-			if (field != null) {
-				if (field.getNodeType() == Node.ELEMENT_NODE) {
-					final Node item = field.getChildNodes().item(0);
-					if (item != null) {
-						if (field.getNodeName() == FIELD_NAME) {
-							name = item.getNodeValue();
-						}
-						if (field.getNodeName() == FIELD_MARK) {
-							mark = item.getNodeValue();
-						}
-					}
-				}
-			}
-		}
-
-		return new Exam(name, ADialog.isNumeric(mark) ? Integer.parseInt(mark) : null);
-	}
-
-	private Document parseForDOM(final File docFile) {
-
-		Document doc = null;
-		try {
-			final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			final Bool hasError = new Bool();
-			dbf.setValidating(true);
-			final DocumentBuilder db = dbf.newDocumentBuilder();
-			db.setErrorHandler(new ErrorHandler() {
-				@Override
-				public void error(final SAXParseException exception) throws SAXException {
-
-					// do something more useful in each of these handlers
-					exception.printStackTrace();
-					hasError.bool = true;
-				}
-
-				@Override
-				public void fatalError(final SAXParseException exception)
-						throws SAXException {
-
-					exception.printStackTrace();
-					hasError.bool = true;
-				}
-
-				@Override
-				public void warning(final SAXParseException exception)
-						throws SAXException {
-
-					exception.printStackTrace();
-					hasError.bool = true;
-				}
-			});
-			doc = db.parse(docFile);
-			if (!hasError.bool) {
-				return doc;
-			}
-		} catch (final Exception e) {
-			LOG.log(Level.SEVERE, PROBLEM_PARSING_THE_FILE + e.getMessage(), e);
-		}
-		return null;
-	}
-
-	private Document parseForDOM(final String xml) {
-
-		return parseForDOM(new File(xml));
-	}
-
-	private Student parseStudent(final Node nodeStudent) {
-
-		boolean quantityError = false;
-		String name = "";
-		String group = "";
-		final Exam[] exams = new Exam[Desktop.EXAMS_COUNT];
-		int index = 0;
-		final NodeList fields = nodeStudent.getChildNodes();
-		if (fields != null) {
-			for (int i = 0; i < fields.getLength(); ++i) {
-				final Node field = fields.item(i);
-				if (field != null) {
-					if (field.getNodeType() == Node.ELEMENT_NODE) {
-						final NodeList childFields = field.getChildNodes();
-						if (childFields.getLength() == 1) {
-							final Node item = childFields.item(0);
-							if (item != null) {
-								if (field.getNodeName() == FIELD_NAME) {
-									name = item.getNodeValue();
-								}
-								if (field.getNodeName() == FIELD_GROUP) {
-									group = item.getNodeValue();
-								}
-							}
-						} else {
-							int counter = 0;
-							for (int j = 0; j < childFields.getLength(); ++j) {
-								final Node examField = childFields.item(j);
-
-								if (examField != null) {
-									if (examField.getNodeType() == Node.ELEMENT_NODE) {
-										if (counter < Desktop.EXAMS_COUNT) {
-											final Exam exam = parseExam(examField);
-											exams[index] = exam;
-											index++;
-											counter++;
-										} else {
-											quantityError = true;
-										}
-									}
-								}
-
-							}
-						}
-					}
-				}
-			}
-		}
-		for (; index < Desktop.EXAMS_COUNT; ++index) {
-			exams[index] = new Exam("", null);
-		}
-		if (quantityError) {
-			JOptionPane.showMessageDialog(null, Window.geti18nString(ERROR_INCORRECT_QUANTITY_IN_EXAMS)
-					+ "(>" + Desktop.EXAMS_COUNT + ") of student " + name);
-			LOG.info(Window.geti18nString(ERROR_INCORRECT_QUANTITY_IN_EXAMS)
-					+ "(>" + Desktop.EXAMS_COUNT + ") of student ");
-		}
-		return new Student(name, ADialog.isNumeric(group) ? Integer.parseInt(group)
-				: null, exams);
 	}
 
 	public void removeObserver() {
@@ -432,14 +214,8 @@ public class Model {
 
 	public void saveXML(final File file) {
 
-		final Document doc = createDocument();
-		if (doc != null) {
-			writeToFile(file, doc);
-		} else {
-			JOptionPane.showMessageDialog(null, Window.geti18nString(ERROR_ERROR_IN_CREATING_DOC));
-			LOG.info(Window.geti18nString(ERROR_ERROR_IN_CREATING_DOC));
-		}
-
+		final XMLWriter xmlWriter = new XMLWriter();
+		xmlWriter.saveXML(file, students);
 	}
 
 	public Vector<Student> search(final String name, final Integer group) {
@@ -491,13 +267,21 @@ public class Model {
 		return studentsVector;
 	}
 
+	public void setMaxObserver(final JTextField observer) {
+
+		maxObserver = observer;
+	}
+
 	public void setObserver(final JTextField observer) {
 
 		this.observer = observer;
 	}
-	
-	public void setMaxObserver(final JTextField observer) {
-		this.maxObserver = observer;
+
+	public void setStudents(final List<Student> students) {
+
+		this.students.clear();
+		this.students.addAll(students);
+		notifyMaxObserver();
 	}
 
 	public void setViewSize(final Integer viewSize) {
@@ -539,9 +323,9 @@ public class Model {
 			tr.transform(new DOMSource(doc), new StreamResult(new FileOutputStream(xml)));
 
 		} catch (final TransformerException te) {
-			LOG.log(Level.SEVERE, te.getMessage(), te);
+			Model.LOG.log(Level.SEVERE, te.getMessage(), te);
 		} catch (final IOException ioe) {
-			LOG.log(Level.SEVERE, ioe.getMessage(), ioe);
+			Model.LOG.log(Level.SEVERE, ioe.getMessage(), ioe);
 		}
 	}
 }

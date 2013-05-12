@@ -1,11 +1,11 @@
 package by.bsuir.iit.abramov.ppvis.findinthetable.util;
 
-public class Couple<T> {
+public class Couple<T, D> {
 	private final T		field1;
-	private final T		field2;
+	private final D		field2;
 	private final int	num;
 
-	public Couple(final T field1, final T field2, final int num) {
+	public Couple(final T field1, final D field2, final int num) {
 
 		this.field2 = field2;
 		this.field1 = field1;
@@ -17,7 +17,7 @@ public class Couple<T> {
 		return field1;
 	}
 
-	public final T getField2() {
+	public final D getField2() {
 
 		return field2;
 	}

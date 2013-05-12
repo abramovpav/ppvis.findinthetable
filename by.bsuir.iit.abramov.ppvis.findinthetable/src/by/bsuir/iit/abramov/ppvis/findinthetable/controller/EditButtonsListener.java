@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import by.bsuir.iit.abramov.ppvis.findinthetable.util.IllegalParametrs;
-import by.bsuir.iit.abramov.ppvis.findinthetable.util.MenuContent;
 import by.bsuir.iit.abramov.ppvis.findinthetable.util.MenuItem;
 
 public class EditButtonsListener implements ActionListener {
@@ -28,10 +27,10 @@ public class EditButtonsListener implements ActionListener {
 			break;
 			case LANGUAGE_ENGLISH:
 				listener = new EnglishLanguageButtonActionListener();
-				break;
+			break;
 			case LANGUAGE_RUSSIAN:
 				listener = new RussianLanguageButtonActionListener();
-				break;
+			break;
 			default:
 				throw new IllegalParametrs();
 		}

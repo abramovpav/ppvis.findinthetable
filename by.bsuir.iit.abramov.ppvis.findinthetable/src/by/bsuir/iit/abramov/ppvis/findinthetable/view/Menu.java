@@ -4,7 +4,6 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -20,9 +19,9 @@ import by.bsuir.iit.abramov.ppvis.findinthetable.util.MenuContent;
 import by.bsuir.iit.abramov.ppvis.findinthetable.util.MenuItem;
 
 public class Menu extends JMenuBar {
-	private Map<MenuContent, JMenu>	mnButtons;
+	private Map<MenuContent, JMenu>		mnButtons;
 	private Map<MenuItem, JMenuItem>	mnItems;
-	private final JPanel			parent;
+	private final JPanel				parent;
 
 	public Menu(final JPanel parent) {
 
@@ -39,24 +38,25 @@ public class Menu extends JMenuBar {
 			final JMenu mnButton = new JMenu(Window.geti18nString(menu.getSection()));
 			mnButtons.put(menu, mnButton);
 			add(mnButton);
-			List<MenuItem> items = menu.getItems();
-			for (MenuItem item : items) {
-				final JMenuItem mnItem = new ExtJMenuItem(Window.geti18nString(item.getName()), parent);
+			final List<MenuItem> items = menu.getItems();
+			for (final MenuItem item : items) {
+				final JMenuItem mnItem = new ExtJMenuItem(Window.geti18nString(item
+						.getName()), parent);
 				mnItems.put(item, mnItem);
 				mnButton.add(mnItem);
 				try {
-					switch(menu) {
+					switch (menu) {
 						case FILE:
 							mnItem.addActionListener(new FileButtonsListener(item));
-							break;
+						break;
 						case EDIT:
 							mnItem.addActionListener(new EditButtonsListener(item));
-							break;
+						break;
 						case ABOUT:
 							mnItem.addActionListener(new AboutButtonActionListener());
-							break;
+						break;
 					}
-				} catch (IllegalParametrs e) {
+				} catch (final IllegalParametrs e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}

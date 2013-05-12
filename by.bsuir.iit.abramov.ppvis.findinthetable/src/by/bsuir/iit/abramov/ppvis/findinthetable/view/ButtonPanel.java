@@ -8,27 +8,32 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class ButtonPanel extends JPanel {
-	private Map<String, JButton> buttons;
-	private JLabel label;
+	private final Map<String, JButton>	buttons;
+	private JLabel						label;
+
 	public ButtonPanel() {
+
 		buttons = new HashMap<String, JButton>();
 	}
-	
-	public void updateInterface() {
-		for (String key : buttons.keySet()) {
-			JButton button = buttons.get(key);
-			button.setText(Window.geti18nString(key));
-		}
-		label.setText(Window.geti18nString(Desktop.MAX));
-	}
-	
-	public void addButton(final String str, JButton button) {
+
+	public void addButton(final String str, final JButton button) {
+
 		if (!buttons.containsValue(button)) {
 			buttons.put(str, button);
 		}
 	}
-	
-	public void setLabel(JLabel label) {
+
+	public void setLabel(final JLabel label) {
+
 		this.label = label;
+	}
+
+	public void updateInterface() {
+
+		for (final String key : buttons.keySet()) {
+			final JButton button = buttons.get(key);
+			button.setText(Window.geti18nString(key));
+		}
+		label.setText(Window.geti18nString(Desktop.MAX));
 	}
 }

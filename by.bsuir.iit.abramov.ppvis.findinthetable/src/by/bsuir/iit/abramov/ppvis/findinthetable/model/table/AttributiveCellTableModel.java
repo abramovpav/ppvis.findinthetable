@@ -14,6 +14,7 @@ import java.util.Vector;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 
+import by.bsuir.iit.abramov.ppvis.findinthetable.model.Model;
 import by.bsuir.iit.abramov.ppvis.findinthetable.model.Student;
 import by.bsuir.iit.abramov.ppvis.findinthetable.view.Window;
 
@@ -29,14 +30,16 @@ public class AttributiveCellTableModel extends DefaultTableModel {
 	}
 
 	protected CellAttribute	cellAtt;
-	private List<Student>		students;
-	private ResourceBundle resourceBundle;
+	private List<Student>	students;
+	private ResourceBundle	resourceBundle;
+
 	public AttributiveCellTableModel() {
 
 		this((Vector) null, 0);
 	}
 
 	public AttributiveCellTableModel(final int numColumns, final List<Student> students) {
+
 		this.students = students;
 		final Vector names = new Vector(numColumns);
 		names.setSize(numColumns);
@@ -125,33 +128,32 @@ public class AttributiveCellTableModel extends DefaultTableModel {
 	@Override
 	public Object getValueAt(final int row, final int col) {
 
-		if (row == 0 && col == 0) {
-			return Window.geti18nString("name");
-		} else if (row == 0 && col == 1) {
-			return Window.geti18nString("group");
-		} else if (row == 0 && col == 2) {
-			return Window.geti18nString("exams");
-		} else if (row == 1 && col >= 2 && col % 2 == 0) {
+		if (isNameCaptionCell(row, col)) {
+			return Window.geti18nString(Model.FIELD_NAME);
+		} else if (isGroupCaptionCell(row, col)) {
+			return Window.geti18nString(Model.FIELD_GROUP);
+		} else if (isExamsCaptionCell(row, col)) {
+			return Window.geti18nString(Model.FIELD_EXAMS);
+		} else if (isNumCaptionCell(row, col)) {
 			return col / 2;
-		} else if (row >= 2 && col >= 2 && col % 2 == 0 && row % 2 == 0) {
-			return Window.geti18nString("name");
-		} else if (row >= 2 && col >= 2 && col % 2 != 0 && row % 2 == 0) {
-			return Window.geti18nString("mark");
+		} else if (isMarkCaptionCell(row, col)) {
+			return Window.geti18nString(Model.FIELD_MARK);
 		} else {
 			final int indexStudent = row / 2 - 1;
-			if (row >= 2 && col == 0 && row % 2 == 0) {
-				return students.get(indexStudent).getName();
-			} else if (row >= 2 && col == 1 && row % 2 == 0) {
-				return students.get(indexStudent).getGroup();
+			final Student student = students.get(indexStudent);
+			if (isNameCell(row, col)) {
+				return student.getName();
+			} else if (isGroupCell(row, col)) {
+				return student.getGroup();
 			} else {
 				final int indexExam = col / 2 - 1;
-				if (row >= 2 && col >= 2 && col % 2 == 0) {
-					if (indexExam < students.get(indexStudent).getExams().size()) {
-						return students.get(indexStudent).getExams().get(indexExam).getName();
+				if (isExamCell(row, col)) {
+					if (isIndexOutOfExams(student, indexExam)) {
+						return student.getExams().get(indexExam).getName();
 					}
-				} else if (row >= 2 && col >= 2 && col % 2 != 0) {
-					if (indexExam < students.get(indexStudent).getExams().size()) {
-						return students.get(indexStudent).getExams().get(indexExam).getMark();
+				} else if (isMarkCell(row, col)) {
+					if (isIndexOutOfExams(student, indexExam)) {
+						return student.getExams().get(indexExam).getMark();
 					}
 				}
 			}
@@ -175,6 +177,56 @@ public class AttributiveCellTableModel extends DefaultTableModel {
 
 		newRowsAdded(new TableModelEvent(this, row, row, TableModelEvent.ALL_COLUMNS,
 				TableModelEvent.INSERT));
+	}
+
+	private boolean isExamCell(final int row, final int col) {
+
+		return row >= 2 && col >= 2 && col % 2 == 0;
+	}
+
+	private boolean isExamsCaptionCell(final int row, final int col) {
+
+		return row == 0 && col == 2;
+	}
+
+	private boolean isGroupCaptionCell(final int row, final int col) {
+
+		return row == 0 && col == 1;
+	}
+
+	private boolean isGroupCell(final int row, final int col) {
+
+		return row >= 2 && col == 1 && row % 2 == 0;
+	}
+
+	private boolean isIndexOutOfExams(final Student student, final int indexExam) {
+
+		return indexExam < student.getExams().size();
+	}
+
+	private boolean isMarkCaptionCell(final int row, final int col) {
+
+		return isMarkCell(row, col) && row % 2 == 0;
+	}
+
+	private boolean isMarkCell(final int row, final int col) {
+
+		return row >= 2 && col >= 2 && col % 2 != 0;
+	}
+
+	private boolean isNameCaptionCell(final int row, final int col) {
+
+		return (row == 0 && col == 0) || (isExamCell(row, col) && row % 2 == 0);
+	}
+
+	private boolean isNameCell(final int row, final int col) {
+
+		return row >= 2 && col == 0 && row % 2 == 0;
+	}
+
+	private boolean isNumCaptionCell(final int row, final int col) {
+
+		return row == 1 && col >= 2 && col % 2 == 0;
 	}
 
 	private void justifyRows(final int from, final int to) {
@@ -245,13 +297,5 @@ public class AttributiveCellTableModel extends DefaultTableModel {
 		setNumRows(numRows);
 		cellAtt = new DefaultCellAttribute(numRows, getColumnCount());
 	}
-
-	/*
-	 * public void changeCellAttribute(int row, int column, Object command) {
-	 * cellAtt.changeAttribute(row, column, command); }
-	 * 
-	 * public void changeCellAttribute(int[] rows, int[] columns, Object
-	 * command) { cellAtt.changeAttribute(rows, columns, command); }
-	 */
 
 }

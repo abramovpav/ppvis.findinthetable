@@ -6,10 +6,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
-import java.util.ResourceBundle;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -48,12 +48,12 @@ public class ADialog extends JDialog {
 		return str.length() == pos.getIndex();
 	}
 
-	private final JPanel				contentPanel	= new JPanel();
-	private final JTextField			studentNameField;
-	private final JTextField			studentGroupField;
-	private final Couple<JTextField>[]	exams;
-	private final int					examsCount		= 5;
-	private Student						student;
+	private final JPanel							contentPanel	= new JPanel();
+	private final JTextField						studentNameField;
+	private final JTextField						studentGroupField;
+	private final Couple<JComboBox, JTextField>[]	exams;
+	private final int								examsCount		= 5;
+	private Student									student;
 
 	public ADialog() {
 
@@ -64,7 +64,7 @@ public class ADialog extends JDialog {
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 
-		final Couple<JTextField> studentFields = initStudentPanel();
+		final Couple<JTextField, JTextField> studentFields = initStudentPanel();
 		studentNameField = studentFields.getField1();
 		studentGroupField = studentFields.getField2();
 		exams = new Couple[examsCount];
@@ -78,10 +78,10 @@ public class ADialog extends JDialog {
 
 		final Exam[] exams = new Exam[examsCount];
 		for (int i = 0; i < examsCount; ++i) {
-			final Couple<JTextField> exam = this.exams[i];
-			final String name = exam.getField1().getText();
+			final Couple<JComboBox, JTextField> exam = this.exams[i];
+			final String name = (String) exam.getField1().getSelectedItem();
 			final String mark = exam.getField2().getText();
-			if (mark.equalsIgnoreCase(ADialog.EXAM_MARK_DEFAULT) || name.length() == 0
+			if (ADialog.EXAM_MARK_DEFAULT.equalsIgnoreCase(mark) || name.length() == 0
 					|| mark.length() == 0) {
 				exams[i] = new Exam(null, null);
 			} else {
@@ -148,7 +148,10 @@ public class ADialog extends JDialog {
 		JPanel subExamPanel;
 
 		for (int i = 0; i < exams.length; ++i) {
-			exams[i] = new Couple<JTextField>(new JTextField(), new JTextField(), i + 1);
+			exams[i] = new Couple<JComboBox, JTextField>(new JComboBox(Window.getExams()
+					.toArray()), new JTextField(), i + 1);
+			exams[i].getField1().setEditable(true);
+			exams[i].getField1().setSelectedIndex(-1);
 			subExamPanel = new JPanel();
 			subExamPanel.setBorder(new EtchedBorder(EtchedBorder.RAISED, null, null));
 			examPanel.add(subExamPanel);
@@ -156,19 +159,18 @@ public class ADialog extends JDialog {
 			lbl = new JLabel(Window.geti18nString(ADialog.EXAM_LABEL) + (i + 1));
 			subExamPanel.add(lbl);
 
-			JTextField field = exams[i].getField1();
-			field.setText(Window.geti18nString(ADialog.EXAM_NAME_DEFAULT));
+			final JComboBox field = exams[i].getField1();
+			// field.setText(Window.geti18nString(ADialog.EXAM_NAME_DEFAULT));
 			subExamPanel.add(field);
-			field.setColumns(10);
 
-			field = exams[i].getField2();
-			field.setText(ADialog.EXAM_MARK_DEFAULT);
-			subExamPanel.add(field);
-			field.setColumns(10);
+			final JTextField field2 = exams[i].getField2();
+			field2.setText(ADialog.EXAM_MARK_DEFAULT);
+			subExamPanel.add(field2);
+			field2.setColumns(10);
 		}
 	}
 
-	private Couple<JTextField> initStudentPanel() {
+	private Couple<JTextField, JTextField> initStudentPanel() {
 
 		final JPanel studentPanel = new JPanel();
 		contentPanel.add(studentPanel);
@@ -186,22 +188,28 @@ public class ADialog extends JDialog {
 		final JTextField studentGroupField = new JTextField();
 		studentPanel.add(studentGroupField);
 		studentGroupField.setColumns(10);
-		return new Couple<JTextField>(studentNameField, studentGroupField, 0);
+		return new Couple<JTextField, JTextField>(studentNameField, studentGroupField, 0);
 	}
 
-	private boolean isExamFieldsIncorrect(final JTextField examNameField,
+	private boolean isExamFieldsIncorrect(final JComboBox examNameField,
 			final JTextField examMarkField) {
 
-		return examNameField.getText().length() == 0
+		return ((String) examNameField.getSelectedItem()).length() == 0
 				|| !ADialog.isNumeric(examMarkField.getText());
 	}
 
-	private boolean isExamFiledsEmpty(final JTextField examNameField,
+	private boolean isExamFiledsEmpty(final JComboBox examNameField,
 			final JTextField examMarkField) {
 
-		return (examNameField.getText().length() == 0 && examMarkField.getText().length() == 0)
-				|| (examNameField.getText().equalsIgnoreCase(ADialog.EXAM_NAME_DEFAULT) && examMarkField
-						.getText().equalsIgnoreCase(ADialog.EXAM_MARK_DEFAULT));
+		if (examNameField.getSelectedIndex() == -1
+				&& examNameField.getSelectedItem() == null) {
+			return true;
+		}
+		return (((String) examNameField.getSelectedItem()).length() == 0 && examMarkField
+				.getText().length() == 0)
+				|| (ADialog.EXAM_NAME_DEFAULT.equalsIgnoreCase((String) examNameField
+						.getSelectedItem()) && ADialog.EXAM_MARK_DEFAULT
+						.equalsIgnoreCase(examMarkField.getText()));
 	}
 
 	private boolean isMarkIncorrect(final int mark) {
@@ -209,35 +217,35 @@ public class ADialog extends JDialog {
 		return mark < 0 || mark > 10;
 	}
 
-	private Couple<Boolean> verifyExamFields(final int num, Boolean isEmpty) {
+	private Couple<Boolean, Boolean> verifyExamFields(final int num, Boolean isEmpty) {
 
 		if (num < 0 || num >= examsCount || exams[num] == null) {
-			return new Couple<Boolean>(false, isEmpty, 0);
+			return new Couple<Boolean, Boolean>(false, isEmpty, 0);
 		}
 
-		final JTextField examNameField = exams[num].getField1();
+		final JComboBox examNameField = exams[num].getField1();
 		final JTextField examMarkField = exams[num].getField2();
 		if (examMarkField == null || examNameField == null) {
-			return new Couple<Boolean>(false, isEmpty, 0);
+			return new Couple<Boolean, Boolean>(false, isEmpty, 0);
 		}
 		if (isExamFiledsEmpty(examNameField, examMarkField)) {
 			final Boolean b = true;
 			isEmpty = b;
-			return new Couple<Boolean>(true, true, 0);
+			return new Couple<Boolean, Boolean>(true, true, 0);
 		} else if (isExamFieldsIncorrect(examNameField, examMarkField)) {
 			JOptionPane.showMessageDialog(null, ADialog.EXAM + (num + 1)
 					+ ADialog.NAME_OR_MARK_ISN_T_CORRECT);
-			return new Couple<Boolean>(false, isEmpty, 0);
+			return new Couple<Boolean, Boolean>(false, isEmpty, 0);
 		} else if (ADialog.isNumeric(examMarkField.getText())) {
 			final int mark = Integer.parseInt(examMarkField.getText());
 			if (isMarkIncorrect(mark)) {
 				JOptionPane.showMessageDialog(null, ADialog.EXAM + (num + 1)
 						+ ADialog.MARK_SHOULD_BE_0_10);
-				return new Couple<Boolean>(false, isEmpty, 0);
+				return new Couple<Boolean, Boolean>(false, isEmpty, 0);
 			}
 		}
 
-		return new Couple<Boolean>(true, isEmpty, 0);
+		return new Couple<Boolean, Boolean>(true, isEmpty, 0);
 	}
 
 	private boolean verifyExamsFields() {
@@ -246,7 +254,7 @@ public class ADialog extends JDialog {
 		boolean result = true;
 		for (int i = 0; i < exams.length; ++i) {
 
-			final Couple<Boolean> verifyExamFields = verifyExamFields(i, false);
+			final Couple<Boolean, Boolean> verifyExamFields = verifyExamFields(i, false);
 			if (!verifyExamFields.getField1()) {
 				result = false;
 			}

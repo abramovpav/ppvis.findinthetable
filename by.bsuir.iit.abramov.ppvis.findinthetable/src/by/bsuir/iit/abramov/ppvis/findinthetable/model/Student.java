@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Student {
-	private final String	name;
-	private final Integer	group;
+	private final String		name;
+	private final Integer		group;
 	private final List<Exam>	exams;
 
 	public Student(final String name, final Integer group, final Exam... exams) {
@@ -13,7 +13,7 @@ public class Student {
 		this.name = name;
 		this.group = group;
 		this.exams = new ArrayList<Exam>();
-		for (Exam exam : exams) {
+		for (final Exam exam : exams) {
 			this.exams.add(exam);
 		}
 	}
@@ -22,7 +22,7 @@ public class Student {
 
 		double result = 0;
 		int counter = 0;
-		for (Exam exam : exams) {
+		for (final Exam exam : exams) {
 			if (exam.getMark() != null) {
 				result += exam.getMark();
 				counter++;
@@ -56,7 +56,7 @@ public class Student {
 
 		double result = -1;
 		double counter = 0;
-		for (Exam exam : exams) {
+		for (final Exam exam : exams) {
 			if (exam.getName() != null) {
 				if (exam.getName().indexOf(examName) != -1) {
 					result += exam.getMark() != null ? exam.getMark() : 0;

@@ -18,70 +18,56 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import by.bsuir.iit.abramov.ppvis.findinthetable.model.Model.Bool;
 import by.bsuir.iit.abramov.ppvis.findinthetable.view.ADialog;
 import by.bsuir.iit.abramov.ppvis.findinthetable.view.Desktop;
 import by.bsuir.iit.abramov.ppvis.findinthetable.view.Window;
 
 class XMLReader {
-	private static final String		PROBLEM_PARSING_THE_FILE			= "Problem parsing the file: ";
-	private static final String		ERROR_INCORRECT_QUANTITY_IN_EXAMS	= "***ERROR***: Incorrect quantity in exams";
-	private static Logger				LOG	= Logger.getLogger(XMLReader.class.getName());
-	public void openXML(final File file, final Model model) {
-
-		final Document doc = parseForDOM(file);
-		List<Student> students = parse(doc);
-		model.setStudents(students);
-		model.update();
+	class Bool {
+		public boolean	bool;
 	}
-	
+
 	private final class MyErrorHandler implements ErrorHandler {
 		@Override
 		public void error(final SAXParseException exception) throws SAXException {
 
 			// do something more useful in each of these handlers
-			//exception.printStackTrace();
-			LOG.log(Level.SEVERE, "Error in parsing: " + exception.getMessage(), exception);
+			// exception.printStackTrace();
+			XMLReader.LOG.log(Level.SEVERE,
+					"Error in parsing: " + exception.getMessage(), exception);
 		}
 
 		@Override
-		public void fatalError(final SAXParseException exception)
-				throws SAXException {
+		public void fatalError(final SAXParseException exception) throws SAXException {
 
-			//exception.printStackTrace();
-			LOG.log(Level.SEVERE, "Error in parsing: " + exception.getMessage(), exception);
+			// exception.printStackTrace();
+			XMLReader.LOG.log(Level.SEVERE,
+					"Error in parsing: " + exception.getMessage(), exception);
 		}
 
 		@Override
-		public void warning(final SAXParseException exception)
-				throws SAXException {
+		public void warning(final SAXParseException exception) throws SAXException {
 
-			//exception.printStackTrace();
-			LOG.log(Level.SEVERE, "Error in parsing: " + exception.getMessage(), exception);
+			// exception.printStackTrace();
+			XMLReader.LOG.log(Level.SEVERE,
+					"Error in parsing: " + exception.getMessage(), exception);
 		}
 	}
 
-	class Bool {
-		public boolean	bool;
-	}
-	
-	private Document parseForDOM(final File docFile) {
+	private static final String	PROBLEM_PARSING_THE_FILE			= "Problem parsing the file: ";
+	private static final String	ERROR_INCORRECT_QUANTITY_IN_EXAMS	= "***ERROR***: Incorrect quantity in exams";
 
-		Document document = null;
-		try {
-			final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-			documentBuilderFactory.setValidating(true);
-			final DocumentBuilder docuumentBuilder = documentBuilderFactory.newDocumentBuilder();
-			//db.setErrorHandler(new MyErrorHandler());
-			document = docuumentBuilder.parse(docFile);
-			return document;
-		} catch (Exception e) {	
-			LOG.log(Level.SEVERE, Window.geti18nString(PROBLEM_PARSING_THE_FILE) + e.getMessage(), e);
-			e = null;
-			return null;
-		}
+	private static Logger		LOG									= Logger.getLogger(XMLReader.class
+																			.getName());
+
+	public void openXML(final File file, final Model model) {
+
+		final Document doc = parseForDOM(file);
+		final List<Student> students = parse(doc);
+		model.setStudents(students);
+		model.update();
 	}
-	
+
 	private List<Student> parse(final Document doc) {
 
 		final List<Student> students = new Vector<Student>();
@@ -104,11 +90,11 @@ class XMLReader {
 			}
 		}
 		/*
-		this.students.clear();
-		this.students.addAll(students);*/
+		 * this.students.clear(); this.students.addAll(students);
+		 */
 		return students;
 	}
-	
+
 	private Exam parseExam(final Node exam) {
 
 		String name = "";
@@ -133,7 +119,29 @@ class XMLReader {
 
 		return new Exam(name, ADialog.isNumeric(mark) ? Integer.parseInt(mark) : null);
 	}
-	
+
+	private Document parseForDOM(final File docFile) {
+
+		Document document = null;
+		try {
+			final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
+					.newInstance();
+			documentBuilderFactory.setValidating(true);
+			final DocumentBuilder docuumentBuilder = documentBuilderFactory
+					.newDocumentBuilder();
+			// db.setErrorHandler(new MyErrorHandler());
+			document = docuumentBuilder.parse(docFile);
+			return document;
+		} catch (Exception e) {
+			XMLReader.LOG.log(
+					Level.SEVERE,
+					Window.geti18nString(XMLReader.PROBLEM_PARSING_THE_FILE)
+							+ e.getMessage(), e);
+			e = null;
+			return null;
+		}
+	}
+
 	private Student parseStudent(final Node nodeStudent) {
 
 		boolean quantityError = false;
@@ -186,8 +194,9 @@ class XMLReader {
 			exams[index] = new Exam("", null);
 		}
 		if (quantityError) {
-			JOptionPane.showMessageDialog(null, ERROR_INCORRECT_QUANTITY_IN_EXAMS
-					+ "(>" + Desktop.EXAMS_COUNT + ") of student " + name);
+			JOptionPane.showMessageDialog(null,
+					XMLReader.ERROR_INCORRECT_QUANTITY_IN_EXAMS + "(>"
+							+ Desktop.EXAMS_COUNT + ") of student " + name);
 		}
 		return new Student(name, ADialog.isNumeric(group) ? Integer.parseInt(group)
 				: null, exams);

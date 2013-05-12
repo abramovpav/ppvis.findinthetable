@@ -22,14 +22,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
-
-import by.bsuir.iit.abramov.ppvis.findinthetable.model.Exam;
-import by.bsuir.iit.abramov.ppvis.findinthetable.model.Student;
 
 /**
  * @version 1.0 11/22/98
@@ -65,8 +58,7 @@ public class MixedExample extends JFrame {
 			final JPanel p_buttons = new JPanel();
 			add(b_fore);
 			add(b_back);
-			
-			
+
 		}
 
 		private final void changeColor(final boolean isForeground) {
@@ -227,31 +219,27 @@ public class MixedExample extends JFrame {
 
 	public MixedExample() {
 
-		/*super("Mixed Example");
-		final Student[] students = { new Student("Abramov", new Integer(9), new Exam(
-				"Math", 9)) };
-		final AttributiveCellTableModel ml = new AttributiveCellTableModel(5, students);
-		final CellAttribute cellAtt = ml.getCellAttribute();
-		final MultiSpanCellTable table = new MultiSpanCellTable(ml);
-		table.setCellSelectionEnabled(true);
-		table.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-		table.setDefaultRenderer(Object.class, new AttributiveCellRenderer());
-		final JScrollPane scroll = new JScrollPane(table);
-
-		final ColorPanel colorPanel = new ColorPanel(table, (ColoredCell) cellAtt);
-		final FontPanel fontPanel = new FontPanel(table, (CellFont) cellAtt);
-		final SpanPanel spanPanel = new SpanPanel(table, (CellSpan) cellAtt);
-		final Box boxAtt = new Box(BoxLayout.Y_AXIS);
-		boxAtt.add(colorPanel);
-		boxAtt.add(fontPanel);
-		boxAtt.add(spanPanel);
-
-		final Box box = new Box(BoxLayout.X_AXIS);
-		box.add(scroll);
-		box.add(new JSeparator(SwingConstants.HORIZONTAL));
-		box.add(boxAtt);
-		getContentPane().add(box);
-		setSize(400, 300);
-		setVisible(true);*/
+		/*
+		 * super("Mixed Example"); final Student[] students = { new
+		 * Student("Abramov", new Integer(9), new Exam( "Math", 9)) }; final
+		 * AttributiveCellTableModel ml = new AttributiveCellTableModel(5,
+		 * students); final CellAttribute cellAtt = ml.getCellAttribute(); final
+		 * MultiSpanCellTable table = new MultiSpanCellTable(ml);
+		 * table.setCellSelectionEnabled(true);
+		 * table.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+		 * table.setDefaultRenderer(Object.class, new
+		 * AttributiveCellRenderer()); final JScrollPane scroll = new
+		 * JScrollPane(table);
+		 * 
+		 * final ColorPanel colorPanel = new ColorPanel(table, (ColoredCell)
+		 * cellAtt); final FontPanel fontPanel = new FontPanel(table, (CellFont)
+		 * cellAtt); final SpanPanel spanPanel = new SpanPanel(table, (CellSpan)
+		 * cellAtt); final Box boxAtt = new Box(BoxLayout.Y_AXIS);
+		 * boxAtt.add(colorPanel); boxAtt.add(fontPanel); boxAtt.add(spanPanel);
+		 * 
+		 * final Box box = new Box(BoxLayout.X_AXIS); box.add(scroll);
+		 * box.add(new JSeparator(SwingConstants.HORIZONTAL)); box.add(boxAtt);
+		 * getContentPane().add(box); setSize(400, 300); setVisible(true);
+		 */
 	}
 }

@@ -2,7 +2,6 @@ package by.bsuir.iit.abramov.ppvis.findinthetable.view;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,7 +18,7 @@ public class ToolPanel extends JPanel {
 	private final ContentPane			contentPane;
 	private Map<MenuItem, ExtJButton>	buttons;
 	private static Logger				LOG	= Logger.getLogger(ToolPanel.class.getName());
-	private JToolBar toolBar;
+	private JToolBar					toolBar;
 
 	public ToolPanel(final ContentPane contentPane) {
 
@@ -35,32 +34,15 @@ public class ToolPanel extends JPanel {
 		toolBar.setOrientation(SwingConstants.VERTICAL);
 		add(toolBar);
 		for (final MenuItem menuItem : MenuContent.EDIT.getItems()) {
-			final ExtJButton button = new ExtJButton(Window.geti18nString(menuItem.getName()), contentPane);
+			final ExtJButton button = new ExtJButton(Window.geti18nString(menuItem
+					.getName()), contentPane);
 			buttons.put(menuItem, button);
 			toolBar.add(button);
 			try {
 				button.addActionListener(new EditButtonsListener(menuItem));
-			} catch (IllegalParametrs e) {
+			} catch (final IllegalParametrs e) {
 				// e.printStackTrace();
-				LOG.log(Level.SEVERE, "IllegalParametrs", e);
-			}
-		}
-	}
-	
-	public void updateInterface() {
-		for (final MenuItem menuItem : MenuContent.EDIT.getItems()) {
-			toolBar.remove(buttons.get(menuItem));
-		}
-		buttons.clear();
-		for (final MenuItem menuItem : MenuContent.EDIT.getItems()) {
-			final ExtJButton button = new ExtJButton(Window.geti18nString(menuItem.getName()), contentPane);
-			buttons.put(menuItem, button);
-			toolBar.add(button);
-			try {
-				button.addActionListener(new EditButtonsListener(menuItem));
-			} catch (IllegalParametrs e) {
-				// e.printStackTrace();
-				LOG.log(Level.SEVERE, "IllegalParametrs", e);
+				ToolPanel.LOG.log(Level.SEVERE, "IllegalParametrs", e);
 			}
 		}
 	}
@@ -68,6 +50,26 @@ public class ToolPanel extends JPanel {
 	private void initialize() {
 
 		buttons = new HashMap<MenuItem, ExtJButton>();
+	}
+
+	public void updateInterface() {
+
+		for (final MenuItem menuItem : MenuContent.EDIT.getItems()) {
+			toolBar.remove(buttons.get(menuItem));
+		}
+		buttons.clear();
+		for (final MenuItem menuItem : MenuContent.EDIT.getItems()) {
+			final ExtJButton button = new ExtJButton(Window.geti18nString(menuItem
+					.getName()), contentPane);
+			buttons.put(menuItem, button);
+			toolBar.add(button);
+			try {
+				button.addActionListener(new EditButtonsListener(menuItem));
+			} catch (final IllegalParametrs e) {
+				// e.printStackTrace();
+				ToolPanel.LOG.log(Level.SEVERE, "IllegalParametrs", e);
+			}
+		}
 	}
 
 }

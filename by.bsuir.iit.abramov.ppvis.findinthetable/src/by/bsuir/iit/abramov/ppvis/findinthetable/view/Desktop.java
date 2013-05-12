@@ -1,19 +1,12 @@
 package by.bsuir.iit.abramov.ppvis.findinthetable.view;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
 import java.util.Vector;
 import java.util.logging.Logger;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -27,7 +20,6 @@ import by.bsuir.iit.abramov.ppvis.findinthetable.model.Student;
 import by.bsuir.iit.abramov.ppvis.findinthetable.model.table.AttributiveCellRenderer;
 import by.bsuir.iit.abramov.ppvis.findinthetable.model.table.AttributiveCellTableModel;
 import by.bsuir.iit.abramov.ppvis.findinthetable.model.table.CellAttribute;
-import by.bsuir.iit.abramov.ppvis.findinthetable.model.table.CellSpan;
 import by.bsuir.iit.abramov.ppvis.findinthetable.model.table.MultiSpanCellTable;
 import by.bsuir.iit.abramov.ppvis.findinthetable.util.CoupleExt;
 import by.bsuir.iit.abramov.ppvis.findinthetable.util.Util;
@@ -38,9 +30,9 @@ public class Desktop extends JPanel {
 	private static final int			EXAM_COLUMNS_COUNT	= 2;
 	private static final int			INFO_COLUMNS_COUNT	= 2;
 	public static final int				EXAMS_COUNT			= 5;
-	public static final int				COLUMNS_COUNT		= INFO_COLUMNS_COUNT
-																	+ EXAMS_COUNT
-																	* EXAM_COLUMNS_COUNT;
+	public static final int				COLUMNS_COUNT		= Desktop.INFO_COLUMNS_COUNT
+																	+ Desktop.EXAMS_COUNT
+																	* Desktop.EXAM_COLUMNS_COUNT;
 	private static Logger				LOG					= Logger.getLogger(Desktop.class
 																	.getName());
 	public static final String			DECREMENT			= "-";
@@ -53,26 +45,19 @@ public class Desktop extends JPanel {
 	private List<Controller>			observers;
 	private AttributiveCellTableModel	tableModel;
 	private Model						model;
-	private ButtonPanel 				buttonPanel;
+	private ButtonPanel					buttonPanel;
 
 	public Desktop(final ContentPane contentPane) {
 
 		this.contentPane = contentPane;
 		initialize();
 	}
-	
-	
 
 	public void addObserver(final Controller observer) {
 
 		if (!observers.contains(observer)) {
 			observers.add(observer);
 		}
-	}
-
-	public final AttributiveCellTableModel getTableModel() {
-
-		return tableModel;
 	}
 
 	public void addStudent(final Student student) {
@@ -91,9 +76,9 @@ public class Desktop extends JPanel {
 
 	private AttributiveCellTableModel createTable(final List<Student> studentsInput) {
 
-		List<Student> students = studentsInput;
+		final List<Student> students = studentsInput;
 		final AttributiveCellTableModel tableModel = new AttributiveCellTableModel(
-				COLUMNS_COUNT, students);
+				Desktop.COLUMNS_COUNT, students);
 		cellAtt = tableModel.getCellAttribute();
 		table = new MultiSpanCellTable(tableModel);
 		table.setCellSelectionEnabled(true);
@@ -109,6 +94,11 @@ public class Desktop extends JPanel {
 	public void deleteStudents(final List<Student> students) {
 
 		model.deleteStudents(students);
+	}
+
+	public final AttributiveCellTableModel getTableModel() {
+
+		return tableModel;
 	}
 
 	public void initialize() {
@@ -135,10 +125,6 @@ public class Desktop extends JPanel {
 	public void openXML(final File file) {
 
 		model.openXML(file);
-	}
-
-	public void updateInterface() {
-		buttonPanel.updateInterface();
 	}
 
 	private void prepareTable() {
@@ -252,12 +238,17 @@ public class Desktop extends JPanel {
 	public void setStudents(final AttributiveCellTableModel tableModel,
 			final List<Student> inputPageOfStudents) {
 
-		List<Student> pageOfStudents = inputPageOfStudents;
+		final List<Student> pageOfStudents = inputPageOfStudents;
 		if (pageOfStudents.size() == 0) {
-			LOG.info("List of students is empty");
+			Desktop.LOG.info("List of students is empty");
 		}
 		tableModel.setStudentsList(pageOfStudents);
 		cellAtt = tableModel.getCellAttribute();
 		prepareTable();
+	}
+
+	public void updateInterface() {
+
+		buttonPanel.updateInterface();
 	}
 }
