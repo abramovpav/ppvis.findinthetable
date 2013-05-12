@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.NumberFormat;
 import java.text.ParsePosition;
+import java.util.ResourceBundle;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -24,15 +25,15 @@ import by.bsuir.iit.abramov.ppvis.findinthetable.util.Couple;
 public class ADialog extends JDialog {
 
 	private static final String	TITLE						= "Add student";
-	private static final String	LABEL_STUDENT_GROUP			= "Group";
-	private static final String	LABEL_STUDENT_NAME			= "Name";
-	private static final String	BUTTON_CANCEL				= "Cancel";
-	private static final String	BUTTON_ADD					= "ADD";
+	private static final String	LABEL_STUDENT_GROUP			= "group";
+	private static final String	LABEL_STUDENT_NAME			= "name";
+	private static final String	BUTTON_CANCEL				= "cancel";
+	private static final String	BUTTON_ADD					= "add";
 	private static final String	ALL_FIELDS_OF_EXAMS_EMPTY	= "All fields of exams empty";
 	private static final String	EXAM						= "Exam ¹";
 	public static final String	MARK_SHOULD_BE_0_10			= " mark should be >= 0 && <= 10";
 	public static final String	NAME_OR_MARK_ISN_T_CORRECT	= " Name or Mark isn't correct";
-	public static final String	EXAM_LABEL					= "exam \u2116";
+	public static final String	EXAM_LABEL					= "exam";
 	public static final String	EXAM_MARK_DEFAULT			= "-1";
 	public static final String	EXAM_NAME_DEFAULT			= "name";
 
@@ -57,7 +58,6 @@ public class ADialog extends JDialog {
 	public ADialog() {
 
 		setTitle(ADialog.TITLE);
-
 		setBounds(100, 100, 450, 333);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setLayout(new FlowLayout());
@@ -103,7 +103,7 @@ public class ADialog extends JDialog {
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
-		JButton button = new JButton(ADialog.BUTTON_ADD);
+		JButton button = new JButton(Window.geti18nString(ADialog.BUTTON_ADD));
 		buttonPane.add(button);
 		button.addActionListener(new ActionListener() {
 
@@ -119,7 +119,7 @@ public class ADialog extends JDialog {
 			}
 		});
 
-		button = new JButton(ADialog.BUTTON_CANCEL);
+		button = new JButton(Window.geti18nString(ADialog.BUTTON_CANCEL));
 		buttonPane.add(button);
 		button.addActionListener(new ActionListener() {
 
@@ -153,11 +153,11 @@ public class ADialog extends JDialog {
 			subExamPanel.setBorder(new EtchedBorder(EtchedBorder.RAISED, null, null));
 			examPanel.add(subExamPanel);
 
-			lbl = new JLabel(ADialog.EXAM_LABEL + (i + 1));
+			lbl = new JLabel(Window.geti18nString(ADialog.EXAM_LABEL) + (i + 1));
 			subExamPanel.add(lbl);
 
 			JTextField field = exams[i].getField1();
-			field.setText(ADialog.EXAM_NAME_DEFAULT);
+			field.setText(Window.geti18nString(ADialog.EXAM_NAME_DEFAULT));
 			subExamPanel.add(field);
 			field.setColumns(10);
 
@@ -173,14 +173,14 @@ public class ADialog extends JDialog {
 		final JPanel studentPanel = new JPanel();
 		contentPanel.add(studentPanel);
 
-		JLabel lbl = new JLabel(ADialog.LABEL_STUDENT_NAME);
+		JLabel lbl = new JLabel(Window.geti18nString(ADialog.LABEL_STUDENT_NAME));
 		studentPanel.add(lbl);
 
 		final JTextField studentNameField = new JTextField();
 		studentPanel.add(studentNameField);
 		studentNameField.setColumns(10);
 
-		lbl = new JLabel(ADialog.LABEL_STUDENT_GROUP);
+		lbl = new JLabel(Window.geti18nString(ADialog.LABEL_STUDENT_GROUP));
 		studentPanel.add(lbl);
 
 		final JTextField studentGroupField = new JTextField();

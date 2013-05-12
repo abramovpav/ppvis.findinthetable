@@ -7,12 +7,15 @@ package by.bsuir.iit.abramov.ppvis.findinthetable.model.table;
 
 import java.awt.Dimension;
 import java.util.Enumeration;
+import java.util.List;
+import java.util.ResourceBundle;
 import java.util.Vector;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 
 import by.bsuir.iit.abramov.ppvis.findinthetable.model.Student;
+import by.bsuir.iit.abramov.ppvis.findinthetable.view.Window;
 
 /**
  * @version 1.0 11/22/98
@@ -26,15 +29,14 @@ public class AttributiveCellTableModel extends DefaultTableModel {
 	}
 
 	protected CellAttribute	cellAtt;
-	private Student[]		students;
-
+	private List<Student>		students;
+	private ResourceBundle resourceBundle;
 	public AttributiveCellTableModel() {
 
 		this((Vector) null, 0);
 	}
 
-	public AttributiveCellTableModel(final int numColumns, final Student[] students) {
-
+	public AttributiveCellTableModel(final int numColumns, final List<Student> students) {
 		this.students = students;
 		final Vector names = new Vector(numColumns);
 		names.setSize(numColumns);
@@ -43,7 +45,7 @@ public class AttributiveCellTableModel extends DefaultTableModel {
 		}
 		setColumnIdentifiers(names);
 		dataVector = new Vector();
-		final int numRows = students.length * 2 + 2;
+		final int numRows = students.size() * 2 + 2;
 		setNumRows(numRows);
 		cellAtt = new DefaultCellAttribute(numRows, numColumns);
 	}
@@ -124,32 +126,32 @@ public class AttributiveCellTableModel extends DefaultTableModel {
 	public Object getValueAt(final int row, final int col) {
 
 		if (row == 0 && col == 0) {
-			return "»м€";
+			return Window.geti18nString("name");
 		} else if (row == 0 && col == 1) {
-			return "√руппа";
+			return Window.geti18nString("group");
 		} else if (row == 0 && col == 2) {
-			return "Ёкзамены";
+			return Window.geti18nString("exams");
 		} else if (row == 1 && col >= 2 && col % 2 == 0) {
 			return col / 2;
 		} else if (row >= 2 && col >= 2 && col % 2 == 0 && row % 2 == 0) {
-			return "наим.";
+			return Window.geti18nString("name");
 		} else if (row >= 2 && col >= 2 && col % 2 != 0 && row % 2 == 0) {
-			return "балл";
+			return Window.geti18nString("mark");
 		} else {
 			final int indexStudent = row / 2 - 1;
 			if (row >= 2 && col == 0 && row % 2 == 0) {
-				return students[indexStudent].getName();
+				return students.get(indexStudent).getName();
 			} else if (row >= 2 && col == 1 && row % 2 == 0) {
-				return students[indexStudent].getGroup();
+				return students.get(indexStudent).getGroup();
 			} else {
 				final int indexExam = col / 2 - 1;
 				if (row >= 2 && col >= 2 && col % 2 == 0) {
-					if (indexExam < students[indexStudent].getExams().length) {
-						return students[indexStudent].getExams()[indexExam].getName();
+					if (indexExam < students.get(indexStudent).getExams().size()) {
+						return students.get(indexStudent).getExams().get(indexExam).getName();
 					}
 				} else if (row >= 2 && col >= 2 && col % 2 != 0) {
-					if (indexExam < students[indexStudent].getExams().length) {
-						return students[indexStudent].getExams()[indexExam].getMark();
+					if (indexExam < students.get(indexStudent).getExams().size()) {
+						return students.get(indexStudent).getExams().get(indexExam).getMark();
 					}
 				}
 			}
@@ -235,10 +237,11 @@ public class AttributiveCellTableModel extends DefaultTableModel {
 		fireTableStructureChanged();
 	}
 
-	public void setStudentsList(final Student[] students) {
+	public void setStudentsList(final List<Student> students) {
 
-		this.students = students;
-		final int numRows = students.length * 2 + 2;
+		this.students.clear();
+		this.students.addAll(students);
+		final int numRows = students.size() * 2 + 2;
 		setNumRows(numRows);
 		cellAtt = new DefaultCellAttribute(numRows, getColumnCount());
 	}

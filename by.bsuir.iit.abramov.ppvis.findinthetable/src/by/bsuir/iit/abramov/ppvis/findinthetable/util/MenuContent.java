@@ -1,29 +1,25 @@
 package by.bsuir.iit.abramov.ppvis.findinthetable.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public enum MenuContent {
-	File("File", "Open...", "Save as...", "Close", "Exit"), Edit("Edit", "Add...",
-			"Delete...", "Find..."), ABOUT("About", "Author");
+	FILE("file", MenuItem.OPEN, MenuItem.SAVE, MenuItem.CLOSE, MenuItem.EXIT), EDIT("edit", MenuItem.ADD,			
+			MenuItem.DELETE, MenuItem.FIND, MenuItem.LANGUAGE_ENGLISH, MenuItem.LANGUAGE_RUSSIAN), ABOUT("about", MenuItem.AUTHOR);
 
 	private String		section;
-	private String[]	items;
+	private List<MenuItem> items;
 
-	private MenuContent(final String section, final String... items) {
+	private MenuContent(final String section, final MenuItem... items) {
 
 		this.section = section;
-		this.items = items;
-	}
-
-	public int getItemIndex(final String item) {
-
-		for (int i = 0; i < items.length; ++i) {
-			if (items[i].equalsIgnoreCase(item)) {
-				return i;
-			}
+		this.items = new ArrayList<MenuItem>();
+		for (MenuItem str : items) {
+			this.items.add(str);
 		}
-		return -1;
 	}
 
-	public String[] getItems() {
+	public List<MenuItem> getItems() {
 
 		return items;
 	}

@@ -19,9 +19,7 @@ public class DeleteButtonActionListener implements ActionListener, ButtonActionL
 	@Override
 	public void actionPerformed(final ActionEvent e) {
 
-		System.out.println("FindButtonActionListener");
 		final ActionButton button = (ActionButton) e.getSource();
-		System.out.println("AddButtonActionListener");
 		final FindDialog dialog = new FindDialog((ContentPane) button.getContainer(),
 				FindDialog.BUTTON_DELETE);
 		dialog.setModal(true);

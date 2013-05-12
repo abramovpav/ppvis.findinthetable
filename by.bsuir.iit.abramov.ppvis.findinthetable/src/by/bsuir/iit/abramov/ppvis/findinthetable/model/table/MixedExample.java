@@ -65,6 +65,8 @@ public class MixedExample extends JFrame {
 			final JPanel p_buttons = new JPanel();
 			add(b_fore);
 			add(b_back);
+			
+			
 		}
 
 		private final void changeColor(final boolean isForeground) {
@@ -225,7 +227,7 @@ public class MixedExample extends JFrame {
 
 	public MixedExample() {
 
-		super("Mixed Example");
+		/*super("Mixed Example");
 		final Student[] students = { new Student("Abramov", new Integer(9), new Exam(
 				"Math", 9)) };
 		final AttributiveCellTableModel ml = new AttributiveCellTableModel(5, students);
@@ -250,6 +252,6 @@ public class MixedExample extends JFrame {
 		box.add(boxAtt);
 		getContentPane().add(box);
 		setSize(400, 300);
-		setVisible(true);
+		setVisible(true);*/
 	}
 }

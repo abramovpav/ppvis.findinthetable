@@ -22,10 +22,7 @@ public class Exam {
 
 	public boolean isEmpty() {
 
-		if ((name == null && mark == null) || name == "") {
-			return true;
-		}
-		return false;
+		return (name == null && mark == null) || "" == name;
 	}
 
 }

@@ -1,24 +1,30 @@
 package by.bsuir.iit.abramov.ppvis.findinthetable.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Student {
 	private final String	name;
 	private final Integer	group;
-	private final Exam[]	exams;
+	private final List<Exam>	exams;
 
 	public Student(final String name, final Integer group, final Exam... exams) {
 
 		this.name = name;
 		this.group = group;
-		this.exams = exams;
+		this.exams = new ArrayList<Exam>();
+		for (Exam exam : exams) {
+			this.exams.add(exam);
+		}
 	}
 
 	public double getAverageMark() {
 
 		double result = 0;
 		int counter = 0;
-		for (int i = 0; i < exams.length; ++i) {
-			if (exams[i].getMark() != null) {
-				result += exams[i].getMark();
+		for (Exam exam : exams) {
+			if (exam.getMark() != null) {
+				result += exam.getMark();
 				counter++;
 			}
 		}
@@ -26,14 +32,14 @@ public class Student {
 		return result;
 	}
 
-	public final Exam[] getExams() {
+	public final List<Exam> getExams() {
 
 		return exams;
 	}
 
 	public final Exam getExams(final int num) {
 
-		return exams[num];
+		return num < exams.size() && num >= 0 ? exams.get(num) : null;
 	}
 
 	public final Integer getGroup() {
@@ -50,10 +56,10 @@ public class Student {
 
 		double result = -1;
 		double counter = 0;
-		for (int i = 0; i < exams.length; ++i) {
-			if (exams[i].getName() != null) {
-				if (exams[i].getName().indexOf(examName) != -1) {
-					result += exams[i].getMark() != null ? exams[i].getMark() : 0;
+		for (Exam exam : exams) {
+			if (exam.getName() != null) {
+				if (exam.getName().indexOf(examName) != -1) {
+					result += exam.getMark() != null ? exam.getMark() : 0;
 					counter++;
 				}
 			}

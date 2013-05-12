@@ -3,29 +3,37 @@ package by.bsuir.iit.abramov.ppvis.findinthetable.controller;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import by.bsuir.iit.abramov.ppvis.findinthetable.util.IllegalParametrs;
 import by.bsuir.iit.abramov.ppvis.findinthetable.util.MenuContent;
+import by.bsuir.iit.abramov.ppvis.findinthetable.util.MenuItem;
 
 public class EditButtonsListener implements ActionListener {
 
-	private final String				name;
+	private final MenuItem				menuItem;
 	private final ButtonActionListener	listener;
 
-	public EditButtonsListener(final String name) {
+	public EditButtonsListener(final MenuItem menuItem) throws IllegalParametrs {
 
-		this.name = name;
+		this.menuItem = menuItem;
 
-		switch (MenuContent.Edit.getItemIndex(name)) {
-			case 0:
+		switch (menuItem) {
+			case ADD:
 				listener = new AddButtonActionListener();
 			break;
-			case 1:
+			case DELETE:
 				listener = new DeleteButtonActionListener();
 			break;
-			case 2:
+			case FIND:
 				listener = new FindButtonActionListener();
 			break;
+			case LANGUAGE_ENGLISH:
+				listener = new EnglishLanguageButtonActionListener();
+				break;
+			case LANGUAGE_RUSSIAN:
+				listener = new RussianLanguageButtonActionListener();
+				break;
 			default:
-				listener = new FindButtonActionListener();
+				throw new IllegalParametrs();
 		}
 	}
 

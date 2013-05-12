@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -33,30 +35,32 @@ import by.bsuir.iit.abramov.ppvis.findinthetable.controller.Controller;
 import by.bsuir.iit.abramov.ppvis.findinthetable.util.Util;
 import by.bsuir.iit.abramov.ppvis.findinthetable.view.ADialog;
 import by.bsuir.iit.abramov.ppvis.findinthetable.view.Desktop;
+import by.bsuir.iit.abramov.ppvis.findinthetable.view.Window;
 
 public class Model {
 	class Bool {
 		public boolean	bool;
 	}
 
-	private static final String		PROBLEM_PARSING_THE_FILE			= "Problem parsing the file: ";
-	private static final String		ERROR_ERROR_IN_CREATING_DOC			= "***ERROR***: Error in creating doc";
-	private static final String		ERROR_INCORRECT_QUANTITY_IN_EXAMS	= "***ERROR***: Incorrect quantity in exams";
-	private static final String		FIELD_MARK							= "mark";
+	private static final String		PROBLEM_PARSING_THE_FILE			= "problem_parsing_the_file";
+	private static final String		ERROR_ERROR_IN_CREATING_DOC			= "error_in_creating_doc";
+	private static final String		ERROR_INCORRECT_QUANTITY_IN_EXAMS	= "error_incorrect_quantity";
+	static final String				FIELD_MARK							= "mark";
 	private static final String		FIELD_STUDENTS						= "students";
 	private static final String		FIELD_STUDENT						= "student";
 	private static final String		FIELD_EXAM							= "exam";
 	private static final String		FIELD_EXAMS							= "exams";
-	private static final String		FIELD_GROUP							= "group";
+	static final String				FIELD_GROUP							= "group";
+	static final String				FIELD_NAME							= "name";
 
-	private static final String		FIELD_NAME							= "name";
-
-	private static final String		ERROR_FILE_INCORRECT				= "***ERROR***: File incorrect";
-	private final Vector<Student>	students;
+	private static final String		ERROR_FILE_INCORRECT				= "error_file_incorrect";
+	private static Logger				LOG	= Logger.getLogger(Model.class.getName());
+	private final List<Student>	students;
 	private JTextField				observer;
+	private JTextField				maxObserver;
 	private final List<Controller>	observers;
 	public static final int			DEFAULT_VIEWSIZE					= 10;
-	private Integer					viewSize							= Model.DEFAULT_VIEWSIZE;
+	private Integer					viewSize							= DEFAULT_VIEWSIZE;
 
 	private int						currPage							= -1;
 
@@ -78,6 +82,11 @@ public class Model {
 		if (student != null) {
 			students.add(student);
 		}
+		notifyMaxObserver();
+	}
+	
+	public int getStudentsCount() {
+		return students.size();
 	}
 
 	public Document createDocument() {
@@ -88,43 +97,42 @@ public class Model {
 			dbf.setValidating(true);
 			final DocumentBuilder db = dbf.newDocumentBuilder();
 			doc = db.newDocument();
-			final Element root = doc.createElement(Model.FIELD_STUDENTS);
-			for (int i = 0; i < students.size(); ++i) {
-				final Student student = students.get(i);
-				final Element studentElement = doc.createElement(Model.FIELD_STUDENT);
+			final Element root = doc.createElement(FIELD_STUDENTS);
+			for (Student student : students) {
+				final Element studentElement = doc.createElement(FIELD_STUDENT);
 				root.appendChild(studentElement);
-				newElement(doc, Model.FIELD_NAME, studentElement, student.getName());
-				newElement(doc, Model.FIELD_GROUP, studentElement, student.getGroup()
+				newElement(doc, FIELD_NAME, studentElement, student.getName());
+				newElement(doc, FIELD_GROUP, studentElement, student.getGroup()
 						.toString());
-				final Exam[] exams = student.getExams();
-				final Element examsElement = doc.createElement(Model.FIELD_EXAMS);
+				final List<Exam> exams = student.getExams();
+				final Element examsElement = doc.createElement(FIELD_EXAMS);
 				studentElement.appendChild(examsElement);
-				for (int j = 0; j < exams.length; ++j) {
-					final Exam exam = exams[j];
+				for (Exam exam : exams) {
 					if (!exam.isEmpty()) {
-						final Element examElement = doc.createElement(Model.FIELD_EXAM);
+						final Element examElement = doc.createElement(FIELD_EXAM);
 						examsElement.appendChild(examElement);
-						newElement(doc, Model.FIELD_NAME, examElement,
+						newElement(doc, FIELD_NAME, examElement,
 								exam.getName() != null ? exam.getName() : " ");
-						newElement(doc, Model.FIELD_MARK, examElement,
+						newElement(doc, FIELD_MARK, examElement,
 								exam.getMark() != null ? exam.getMark().toString() : " ");
 					}
 				}
 			}
 			doc.appendChild(root);
 		} catch (final Exception e) {
-			System.out.print(Model.PROBLEM_PARSING_THE_FILE + e.getMessage());
+			LOG.log(Level.SEVERE, Window.geti18nString(PROBLEM_PARSING_THE_FILE) + e.getMessage(), e);
 		}
 		return doc;
 	}
 
-	public void deleteStudents(final Student[] delStudents) {
+	public void deleteStudents(final List<Student> delStudents) {
 
-		for (int i = 0; i < delStudents.length; ++i) {
-			if (students.contains(delStudents[i])) {
-				students.remove(delStudents[i]);
+		for (Student student : delStudents) {
+			if (students.contains(student)) {
+				students.remove(student);
 			}
 		}
+		notifyMaxObserver();
 		update();
 	}
 
@@ -133,7 +141,7 @@ public class Model {
 		return currPage;
 	}
 
-	public final Student[] getCurrPageOfStudent() {
+	public final List<Student> getCurrPageOfStudent() {
 
 		if (getCurrPage() < 0) {
 			resetCurrPage();
@@ -150,8 +158,20 @@ public class Model {
 		}
 		return result;
 	}
+	
+	public void leafNext() {
+		if (currPage < getMaxPage() - 1) {
+			currPage++;
+		}
+	}
+	
+	public void leafPrev() {
+		if (currPage > 0) {
+			currPage--;
+		}
+	}
 
-	public Student[] getNextPageOfStudents() {
+	public List<Student> getNextPageOfStudents() {
 
 		if (currPage < getMaxPage() - 1) {
 			currPage++;
@@ -159,13 +179,14 @@ public class Model {
 		return getPageOfStudents();
 	}
 
-	private Student[] getPageOfStudents() {
-
+	private List<Student> getPageOfStudents() {
+		final List<Student> pageStudents  = new Vector<Student>();
+		
 		if (students.size() == 0) {
-			return null;
+			return pageStudents;
 		}
 		if (currPage < 0 || currPage >= getMaxPage()) {
-			return null;
+			return pageStudents;
 		}
 		int size = 0;
 		if (students.size() - viewSize * currPage < viewSize) {
@@ -174,16 +195,15 @@ public class Model {
 			size = viewSize;
 		}
 		if (size == 0) {
-			return null;
+			return pageStudents;
 		}
-		final Student[] pageStudents = new Student[size];
 		for (int i = 0; i < size; ++i) {
-			pageStudents[i] = students.get(i + viewSize * currPage);
+			pageStudents.add(students.get(i + viewSize * currPage));
 		}
 		return pageStudents;
 	}
 
-	public Student[] getPrevPageOfStudents() {
+	public List<Student> getPrevPageOfStudents() {
 
 		if (currPage > 0) {
 			currPage--;
@@ -212,13 +232,29 @@ public class Model {
 		if (observer != null) {
 			observer.setText(Integer.toString(viewSize));
 		}
+		
+	}
+	
+	public void notifyMaxObserver() {
+		if (maxObserver != null) {
+			maxObserver.setText(Integer.toString(students.size()));
+		}
 	}
 
 	public void openXML(final File file) {
-
+		/*
 		final Document doc = parseForDOM(file);
 		parse(doc);
-		update();
+		update();*/
+		XMLReader reader = new XMLReader();
+		reader.openXML(file, this);
+		
+	}
+	
+	public void setStudents(List<Student> students) {
+		this.students.clear();
+		this.students.addAll(students);
+		notifyMaxObserver();
 	}
 
 	private void parse(final Document doc) {
@@ -254,10 +290,10 @@ public class Model {
 				if (field.getNodeType() == Node.ELEMENT_NODE) {
 					final Node item = field.getChildNodes().item(0);
 					if (item != null) {
-						if (field.getNodeName() == Model.FIELD_NAME) {
+						if (field.getNodeName() == FIELD_NAME) {
 							name = item.getNodeValue();
 						}
-						if (field.getNodeName() == Model.FIELD_MARK) {
+						if (field.getNodeName() == FIELD_MARK) {
 							mark = item.getNodeValue();
 						}
 					}
@@ -306,7 +342,7 @@ public class Model {
 				return doc;
 			}
 		} catch (final Exception e) {
-			System.out.print(Model.PROBLEM_PARSING_THE_FILE + e.getMessage());
+			LOG.log(Level.SEVERE, PROBLEM_PARSING_THE_FILE + e.getMessage(), e);
 		}
 		return null;
 	}
@@ -333,10 +369,10 @@ public class Model {
 						if (childFields.getLength() == 1) {
 							final Node item = childFields.item(0);
 							if (item != null) {
-								if (field.getNodeName() == Model.FIELD_NAME) {
+								if (field.getNodeName() == FIELD_NAME) {
 									name = item.getNodeValue();
 								}
-								if (field.getNodeName() == Model.FIELD_GROUP) {
+								if (field.getNodeName() == FIELD_GROUP) {
 									group = item.getNodeValue();
 								}
 							}
@@ -368,8 +404,10 @@ public class Model {
 			exams[index] = new Exam("", null);
 		}
 		if (quantityError) {
-			JOptionPane.showMessageDialog(null, Model.ERROR_INCORRECT_QUANTITY_IN_EXAMS
+			JOptionPane.showMessageDialog(null, Window.geti18nString(ERROR_INCORRECT_QUANTITY_IN_EXAMS)
 					+ "(>" + Desktop.EXAMS_COUNT + ") of student " + name);
+			LOG.info(Window.geti18nString(ERROR_INCORRECT_QUANTITY_IN_EXAMS)
+					+ "(>" + Desktop.EXAMS_COUNT + ") of student ");
 		}
 		return new Student(name, ADialog.isNumeric(group) ? Integer.parseInt(group)
 				: null, exams);
@@ -398,7 +436,8 @@ public class Model {
 		if (doc != null) {
 			writeToFile(file, doc);
 		} else {
-			JOptionPane.showMessageDialog(null, Model.ERROR_ERROR_IN_CREATING_DOC);
+			JOptionPane.showMessageDialog(null, Window.geti18nString(ERROR_ERROR_IN_CREATING_DOC));
+			LOG.info(Window.geti18nString(ERROR_ERROR_IN_CREATING_DOC));
 		}
 
 	}
@@ -456,6 +495,10 @@ public class Model {
 
 		this.observer = observer;
 	}
+	
+	public void setMaxObserver(final JTextField observer) {
+		this.maxObserver = observer;
+	}
 
 	public void setViewSize(final Integer viewSize) {
 
@@ -496,9 +539,9 @@ public class Model {
 			tr.transform(new DOMSource(doc), new StreamResult(new FileOutputStream(xml)));
 
 		} catch (final TransformerException te) {
-			System.out.println(te.getMessage());
+			LOG.log(Level.SEVERE, te.getMessage(), te);
 		} catch (final IOException ioe) {
-			System.out.println(ioe.getMessage());
+			LOG.log(Level.SEVERE, ioe.getMessage(), ioe);
 		}
 	}
 }

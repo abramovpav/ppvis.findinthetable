@@ -10,6 +10,10 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.AbstractButton;
 import javax.swing.BoxLayout;
@@ -28,6 +32,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import by.bsuir.iit.abramov.ppvis.findinthetable.controller.Controller;
+import by.bsuir.iit.abramov.ppvis.findinthetable.controller.NavigationButtonActionListener;
 import by.bsuir.iit.abramov.ppvis.findinthetable.model.Model;
 import by.bsuir.iit.abramov.ppvis.findinthetable.model.Student;
 import by.bsuir.iit.abramov.ppvis.findinthetable.model.table.AttributiveCellRenderer;
@@ -39,6 +44,8 @@ import by.bsuir.iit.abramov.ppvis.findinthetable.util.CoupleExt;
 import by.bsuir.iit.abramov.ppvis.findinthetable.util.Util;
 
 public class FindDialog extends JDialog {
+
+	private static final String	NO_FIELDS_MATCHING_REQUEST	= "no_fields_matching_request";
 
 	class ButtonActionListener implements ActionListener {
 
@@ -56,7 +63,6 @@ public class FindDialog extends JDialog {
 					}
 				}
 			} else if (e.getActionCommand().equals(FindDialog.BUTTON_CANCEL)) {
-				isOK = false;
 				setVisible(false);
 				dispose();
 			}
@@ -67,17 +73,19 @@ public class FindDialog extends JDialog {
 
 	private static final String									SHARP				= " #";
 	public static final String									EXAM				= "exam";
-	private static final String									LABEL_EXAM			= "Exam";
-	private static final String									LABEL_GROUP			= "Group";
+	private static final String									LABEL_EXAM			= "exam";
+	private static final String									LABEL_GROUP			= "group";
 	public static final String									GROUP				= "group";
 	public static final String									TO					= "to";
 	public static final String									FROM				= "from";
 	public static final String									NAME				= "name";
-	private static final String									LABEL_FIRST_NAME	= "FirstName";
-	private static final String									BUTTON_CANCEL		= "Cancel";
-	private static String										BUTTON_OK			= "Search";
-	public static final String									BUTTON_SEARCH		= "Search";
-	public static final String									BUTTON_DELETE		= "Delete";
+	private static final String									LABEL_FIRST_NAME	= "name";
+	private static final String									BUTTON_CANCEL		= "cancel";
+	private static String										BUTTON_OK			= "search";
+	public static final String									BUTTON_SEARCH		= "search";
+	public static final String									BUTTON_DELETE		= "delete";
+	private static Logger										LOG					= Logger.getLogger(FindDialog.class
+																							.getName());
 
 	private static String										LABEL_SEARCH		= FindDialog.BUTTON_SEARCH
 																							+ FindDialog.SHARP;
@@ -89,11 +97,9 @@ public class FindDialog extends JDialog {
 	public static final int										defaultHeight		= 378;
 	private CellAttribute										cellAtt;
 	private MultiSpanCellTable									table;
-	private List<Controller>									observers;
 	private AttributiveCellTableModel							tableModel;
 	private Model												model;
 	private Map<Integer, List<CoupleExt<String, JTextField>>>	groups;
-	private boolean												isOK;
 	private ButtonGroup											buttonGroup;
 
 	private final ContentPane									contP;
@@ -106,9 +112,9 @@ public class FindDialog extends JDialog {
 		if (title != FindDialog.BUTTON_SEARCH && title != FindDialog.BUTTON_DELETE) {
 			title = FindDialog.BUTTON_SEARCH;
 		}
-		setTitle(title);
+		setTitle(Window.geti18nString(title));
 		FindDialog.BUTTON_OK = title;
-		FindDialog.LABEL_SEARCH = FindDialog.BUTTON_OK + FindDialog.SHARP;
+		FindDialog.LABEL_SEARCH = Window.geti18nString(BUTTON_OK) + FindDialog.SHARP;
 		this.contP = contP;
 		setBounds(FindDialog.defaultX, FindDialog.defaultY, 769, 378);
 		getContentPane().setLayout(new BorderLayout());
@@ -155,9 +161,10 @@ public class FindDialog extends JDialog {
 
 		final List<CoupleExt<String, JTextField>> list = groups.get(num);
 		if (list == null) {
-			System.out.println("***ERROR***: list is empty");
+			LOG.info("***ERROR***: list is empty");
 			return false;
 		}
+		// for each();
 		for (int i = 0; i < list.size(); ++i) {
 			final CoupleExt<String, JTextField> item = list.get(i);
 			String text;
@@ -202,47 +209,6 @@ public class FindDialog extends JDialog {
 		}
 
 		return true;
-	}
-
-	private void combine(final CellAttribute cellAtt, final MultiSpanCellTable table,
-			final int[] columns, final int[] rows) {
-
-		((CellSpan) cellAtt).combine(rows, columns);
-		table.clearSelection();
-		table.revalidate();
-		table.repaint();
-	}
-
-	private void combine2FirstColumns() {
-
-		int i = 0;
-		while (i + 2 <= table.getRowCount()) {
-			combineNCellsInColumn(0, i, i + 1);
-			combineNCellsInColumn(1, i, i + 1);
-			i += 2;
-		}
-	}
-
-	private void combineCellInExamCaption() {
-
-		final int[] rows = { 0 };
-		final int[] columns = new int[table.getColumnCount() - 2];
-		for (int i = 0; i < columns.length; ++i) {
-			columns[i] = 2 + i;
-		}
-		combine(cellAtt, table, columns, rows);
-	}
-
-	private void combineNCellsInColumn(final int i, final int... rows) {
-
-		final int[] columns = { i };
-		combine(cellAtt, table, columns, rows);
-	}
-
-	private void combineNCellsInRow(final int i, final int... columns) {
-
-		final int[] rows = { i };
-		combine(cellAtt, table, columns, rows);
 	}
 
 	private JTextField createLabel_JTextField(final JPanel panel, final String text,
@@ -296,10 +262,10 @@ public class FindDialog extends JDialog {
 		}
 	}
 
-	private AttributiveCellTableModel createTable(final Student[] studentsInput,
+	private AttributiveCellTableModel createTable(final List<Student> studentsInput,
 			final JScrollPane scrollPane) {
 
-		Student[] students = {};
+		List<Student> students = new Vector<Student>();
 		if (studentsInput != null) {
 			students = studentsInput;
 		}
@@ -317,8 +283,12 @@ public class FindDialog extends JDialog {
 
 	private void delete(final int num) {
 
-		final Student[] students = contP.search(groups.get(num), num);
-		setStudents(tableModel, students);
+		final List<Student> students = contP.search(groups.get(num), num);
+		if (students.size() == 0) {
+			JOptionPane.showMessageDialog(null,
+					Window.geti18nString(NO_FIELDS_MATCHING_REQUEST));
+		}
+		setStudents(students);
 		contP.deleteStudents(students);
 	}
 
@@ -337,50 +307,64 @@ public class FindDialog extends JDialog {
 		for (int i = 1; i <= 3; ++i) {
 			createSearchPanel(panel_lvl2, i, groups);
 		}
-
+		final JPanel tablePanel = new JPanel();
+		tablePanel.setLayout(new BorderLayout(0, 0));
 		final JScrollPane scrollPane = new JScrollPane();
-		contentPanel.add(scrollPane);
+		tablePanel.add(scrollPane, BorderLayout.CENTER);
+		contentPanel.add(tablePanel);
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new BorderLayout(0, 0));
+		tablePanel.add(buttonPanel, BorderLayout.SOUTH);
 
 		final JPanel buttonPane = new JPanel();
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
-		JButton button = new JButton(FindDialog.BUTTON_OK);
+		JButton button = new JButton(Window.geti18nString(FindDialog.BUTTON_OK));
 		button.setActionCommand(FindDialog.BUTTON_OK);
 		button.addActionListener(new ButtonActionListener());
 		buttonPane.add(button);
 		getRootPane().setDefaultButton(button);
 
-		button = new JButton(FindDialog.BUTTON_CANCEL);
+		button = new JButton(Window.geti18nString(FindDialog.BUTTON_CANCEL));
 		button.setActionCommand(FindDialog.BUTTON_CANCEL);
 		button.addActionListener(new ButtonActionListener());
 		buttonPane.add(button);
 
-		observers = new ArrayList<Controller>();
 
 		model = new Model();
+		Util.createButtonPanel(model, this, buttonPanel, new NavigationButtonActionListener(model, this));
 
-		final Student[] students = model.getNextPageOfStudents();
+		final List<Student> students = model.getNextPageOfStudents();
 
 		tableModel = createTable(students, scrollPane);
 		prepareTable();
 	}
 
+	public final AttributiveCellTableModel getTableModel() {
+
+		return tableModel;
+	}
+
 	private void prepareTable() {
 
-		combine2FirstColumns();
+		Util.combine2FirstColumns(table, cellAtt);
 		int i = 2;
 		while (i + 2 <= table.getColumnCount()) {
-			combineNCellsInRow(1, i, i + 1);
+			Util.combineNCellsInRow(table, cellAtt, 1, i, i + 1);
 			i += 2;
 		}
-		combineCellInExamCaption();
+		Util.combineCellInExamCaption(table, cellAtt);
 	}
 
 	private void search(final int num) {
 
-		final Student[] students = contP.search(groups.get(num), num);
-		setStudents(tableModel, students);
+		final List<Student> students = contP.search(groups.get(num), num);
+		if (students.size() == 0) {
+			JOptionPane.showMessageDialog(null,
+					Window.geti18nString(NO_FIELDS_MATCHING_REQUEST));
+		}
+		setStudents(students);
 	}
 
 	private void search1(final JPanel panel_lvl3,
@@ -395,8 +379,8 @@ public class FindDialog extends JDialog {
 		panel_lvl5.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
 		final JTextField textField = createLabel_JTextField(panel_lvl5,
-				FindDialog.LABEL_FIRST_NAME, 10);
-		list.add(new CoupleExt<String, JTextField>(FindDialog.NAME, textField));
+				Window.geti18nString(LABEL_FIRST_NAME), 10);
+		list.add(new CoupleExt<String, JTextField>(Window.geti18nString(NAME), textField));
 		panel_lvl5 = new JPanel();
 		panel_lvl4.add(panel_lvl5);
 		panel_lvl5.setLayout(new BoxLayout(panel_lvl5, BoxLayout.X_AXIS));
@@ -405,14 +389,15 @@ public class FindDialog extends JDialog {
 		panel_lvl5.add(panelFromTo);
 
 		final JTextField textField_1 = createLabel_JTextField(panelFromTo,
-				FindDialog.FROM, 2);
-		list.add(new CoupleExt<String, JTextField>(FindDialog.FROM, textField_1));
+				Window.geti18nString(FROM), 2);
+		list.add(new CoupleExt<String, JTextField>(Window.geti18nString(FROM),
+				textField_1));
 
 		panelFromTo = new JPanel();
 		panel_lvl5.add(panelFromTo);
-		final JTextField textField_2 = createLabel_JTextField(panelFromTo, FindDialog.TO,
-				2);
-		list.add(new CoupleExt<String, JTextField>(FindDialog.TO, textField_2));
+		final JTextField textField_2 = createLabel_JTextField(panelFromTo,
+				Window.geti18nString(TO), 2);
+		list.add(new CoupleExt<String, JTextField>(Window.geti18nString(TO), textField_2));
 	}
 
 	private void search2(final JPanel panel_lvl3,
@@ -427,10 +412,10 @@ public class FindDialog extends JDialog {
 		panel_lvl4.add(panel_lvl5);
 		panel_lvl5.setLayout(new BoxLayout(panel_lvl5, BoxLayout.Y_AXIS));
 
-		final JLabel lblGroup = new JLabel(FindDialog.LABEL_FIRST_NAME);
+		final JLabel lblGroup = new JLabel(Window.geti18nString(LABEL_FIRST_NAME));
 		panel_lvl5.add(lblGroup);
 
-		final JLabel lblGroup_1 = new JLabel(FindDialog.LABEL_GROUP);
+		final JLabel lblGroup_1 = new JLabel(Window.geti18nString(LABEL_GROUP));
 		panel_lvl5.add(lblGroup_1);
 
 		panel_lvl5 = new JPanel();
@@ -441,12 +426,14 @@ public class FindDialog extends JDialog {
 		panel_lvl5.add(textField_3);
 		textField_3.setColumns(10);
 
-		list.add(new CoupleExt<String, JTextField>(FindDialog.NAME, textField_3));
+		list.add(new CoupleExt<String, JTextField>(Window.geti18nString(NAME),
+				textField_3));
 
 		final JTextField textField_4 = new JTextField();
 		panel_lvl5.add(textField_4);
 		textField_4.setColumns(10);
-		list.add(new CoupleExt<String, JTextField>(FindDialog.GROUP, textField_4));
+		list.add(new CoupleExt<String, JTextField>(Window.geti18nString(GROUP),
+				textField_4));
 	}
 
 	private void search3(final JPanel panel_lvl3,
@@ -471,10 +458,10 @@ public class FindDialog extends JDialog {
 		panel_lvl5.add(panel_lvl6);
 		panel_lvl6.setLayout(new BoxLayout(panel_lvl6, BoxLayout.Y_AXIS));
 
-		final JLabel lblFirstname = new JLabel(FindDialog.LABEL_FIRST_NAME);
+		final JLabel lblFirstname = new JLabel(Window.geti18nString(LABEL_FIRST_NAME));
 		panel_lvl6.add(lblFirstname);
 
-		final JLabel lblExam = new JLabel(FindDialog.LABEL_EXAM);
+		final JLabel lblExam = new JLabel(Window.geti18nString(LABEL_EXAM));
 		panel_lvl6.add(lblExam);
 
 		panel_lvl6 = new JPanel();
@@ -484,12 +471,14 @@ public class FindDialog extends JDialog {
 		final JTextField textField_5 = new JTextField();
 		panel_lvl6.add(textField_5);
 		textField_5.setColumns(10);
-		list.add(new CoupleExt<String, JTextField>(FindDialog.NAME, textField_5));
+		list.add(new CoupleExt<String, JTextField>(Window.geti18nString(NAME),
+				textField_5));
 
 		final JTextField textField_8 = new JTextField();
 		panel_lvl6.add(textField_8);
 		textField_8.setColumns(10);
-		list.add(new CoupleExt<String, JTextField>(FindDialog.EXAM, textField_8));
+		list.add(new CoupleExt<String, JTextField>(Window.geti18nString(EXAM),
+				textField_8));
 
 		panel_lvl5 = new JPanel();
 		panel_lvl4.add(panel_lvl5);
@@ -499,29 +488,42 @@ public class FindDialog extends JDialog {
 		panel_lvl5.add(panelFromTo);
 
 		final JTextField textField_6 = createLabel_JTextField(panelFromTo,
-				FindDialog.FROM, 2);
-		list.add(new CoupleExt<String, JTextField>(FindDialog.FROM, textField_6));
+				Window.geti18nString(FROM), 2);
+		list.add(new CoupleExt<String, JTextField>(Window.geti18nString(FROM),
+				textField_6));
 
 		panelFromTo = new JPanel();
 		panel_lvl5.add(panelFromTo);
 
-		final JTextField textField_7 = createLabel_JTextField(panelFromTo, FindDialog.TO,
-				2);
-		list.add(new CoupleExt<String, JTextField>(FindDialog.TO, textField_7));
+		final JTextField textField_7 = createLabel_JTextField(panelFromTo,
+				Window.geti18nString(TO), 2);
+		list.add(new CoupleExt<String, JTextField>(Window.geti18nString(TO), textField_7));
 
 	}
 
-	private void setStudents(final AttributiveCellTableModel tableModel,
-			final Student[] pageOfStudents) {
+	public void tableUpdate() {
 
-		for (int i = 0; i < pageOfStudents.length; ++i) {
-			System.out.println(pageOfStudents[i].getName());
-		}
-		tableModel.setStudentsList(pageOfStudents);
+		tableModel.setStudentsList(model.getCurrPageOfStudent());
 		cellAtt = tableModel.getCellAttribute();
 		prepareTable();
-		if (pageOfStudents.length == 0) {
-			JOptionPane.showMessageDialog(null, "No fields matching request");
-		}
+	}
+
+	public void showNextPageOfStudents() {
+
+		model.leafNext();
+		tableUpdate();
+	}
+
+	public void showPrevPageOfStudents() {
+
+		model.leafPrev();
+		tableUpdate();
+	}
+
+	public void setStudents(final List<Student> pageOfStudents) {
+
+		model.setStudents(pageOfStudents);
+		tableUpdate();
+
 	}
 }

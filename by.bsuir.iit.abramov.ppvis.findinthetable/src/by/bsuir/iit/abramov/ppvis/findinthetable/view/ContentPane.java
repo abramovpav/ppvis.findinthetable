@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.io.File;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
@@ -15,6 +16,8 @@ import by.bsuir.iit.abramov.ppvis.findinthetable.model.Student;
 import by.bsuir.iit.abramov.ppvis.findinthetable.util.CoupleExt;
 
 public class ContentPane extends JPanel {
+	private static final String	ABOUT_AUTHOR	= "about_author";
+	private static final String	ABOUT_TITLE	= "about_title";
 	private ToolPanel		toolBar;
 	private Desktop			desktop;
 	private final JFrame	parent;
@@ -24,11 +27,21 @@ public class ContentPane extends JPanel {
 		this.parent = parent;
 		initialize();
 	}
+	
+	public void setEnLocale() {
+		((Window)parent).setEnLocale();
+	}
+	
+	
+	
+	public void setRuLocale() {
+		((Window)parent).setRuLocale();
+	}
 
 	public void about() {
 
 		JOptionPane.showMessageDialog(null,
-				"Автор: Абрамов Павел. \ne-mail: abramovpav@gmail.com", "Об авторе",
+				Window.geti18nString(ABOUT_AUTHOR), Window.geti18nString(ABOUT_TITLE),
 				JOptionPane.INFORMATION_MESSAGE);
 	}
 
@@ -42,7 +55,7 @@ public class ContentPane extends JPanel {
 		desktop.close();
 	}
 
-	public void deleteStudents(final Student[] students) {
+	public void deleteStudents(final List<Student> students) {
 
 		desktop.deleteStudents(students);
 	}
@@ -61,6 +74,12 @@ public class ContentPane extends JPanel {
 		toolBar = new ToolPanel(this);
 		add(toolBar, BorderLayout.EAST);
 	}
+	
+	public void updateInteface() {
+		toolBar.updateInterface();
+		desktop.updateInterface();
+	}
+
 
 	public void openXML(final File file) {
 
@@ -72,7 +91,7 @@ public class ContentPane extends JPanel {
 		desktop.saveXML(file);
 	}
 
-	public Student[] search(final List<CoupleExt<String, JTextField>> list, final int num) {
+	public List<Student> search(final List<CoupleExt<String, JTextField>> list, final int num) {
 
 		return desktop.search(list, num);
 	}

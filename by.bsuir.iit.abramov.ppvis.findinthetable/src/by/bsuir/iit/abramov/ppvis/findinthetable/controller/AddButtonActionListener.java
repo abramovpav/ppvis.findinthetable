@@ -21,7 +21,6 @@ public class AddButtonActionListener implements ActionListener, ButtonActionList
 	public void actionPerformed(final ActionEvent e) {
 
 		final ActionButton button = (ActionButton) e.getSource();
-		System.out.println("AddButtonActionListener");
 		final ADialog dialog = new ADialog();
 		dialog.setModal(true);
 		dialog.setVisible(true);
