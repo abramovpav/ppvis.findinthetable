@@ -2,10 +2,6 @@ package by.bsuir.iit.abramov.ppvis.findinthetable.view;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.NumberFormat;
-import java.text.ParsePosition;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -18,41 +14,34 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
+import by.bsuir.iit.abramov.ppvis.findinthetable.controller.DialogAddButtonActionListener;
+import by.bsuir.iit.abramov.ppvis.findinthetable.controller.DialogCancelButtonActionListener;
 import by.bsuir.iit.abramov.ppvis.findinthetable.model.Exam;
 import by.bsuir.iit.abramov.ppvis.findinthetable.model.Student;
 import by.bsuir.iit.abramov.ppvis.findinthetable.util.Couple;
+import by.bsuir.iit.abramov.ppvis.findinthetable.util.Util;
 
 public class ADialog extends JDialog {
 
-	private static final String	TITLE						= "Add student";
-	private static final String	LABEL_STUDENT_GROUP			= "group";
-	private static final String	LABEL_STUDENT_NAME			= "name";
-	private static final String	BUTTON_CANCEL				= "cancel";
-	private static final String	BUTTON_ADD					= "add";
-	private static final String	ALL_FIELDS_OF_EXAMS_EMPTY	= "All fields of exams empty";
-	private static final String	EXAM						= "Exam ¹";
-	public static final String	MARK_SHOULD_BE_0_10			= " mark should be >= 0 && <= 10";
-	public static final String	NAME_OR_MARK_ISN_T_CORRECT	= " Name or Mark isn't correct";
-	public static final String	EXAM_LABEL					= "exam";
-	public static final String	EXAM_MARK_DEFAULT			= "-1";
-	public static final String	EXAM_NAME_DEFAULT			= "name";
+	private static final String						STUDENT_NAME_OR_GROUP_ISN_T_CORRECT	= "student_name_or_group_isnt_correct";
+	private static final String						TITLE								= "Add student";
+	private static final String						LABEL_STUDENT_GROUP					= "group";
+	private static final String						LABEL_STUDENT_NAME					= "name";
+	private static final String						BUTTON_CANCEL						= "cancel";
+	private static final String						BUTTON_ADD							= "add";
+	private static final String						ALL_FIELDS_OF_EXAMS_EMPTY			= "all_fields_of_exams_empty";
+	private static final String						EXAM_N								= "exam_n";
+	public static final String						MARK_SHOULD_BE_0_10					= "mark_should_be_0_10";
+	public static final String						NAME_OR_MARK_ISN_T_CORRECT			= "name_or_mark_isn_t_correct";
+	public static final String						EXAM_LABEL							= "exam";
+	public static final String						EXAM_MARK_DEFAULT					= "-1";
+	public static final String						EXAM_NAME_DEFAULT					= "name";
 
-	public static boolean isNumeric(final String str) {
-
-		if (str.length() == 0) {
-			return false;
-		}
-		final NumberFormat formatter = NumberFormat.getInstance();
-		final ParsePosition pos = new ParsePosition(0);
-		formatter.parse(str, pos);
-		return str.length() == pos.getIndex();
-	}
-
-	private final JPanel							contentPanel	= new JPanel();
+	private final JPanel							contentPanel						= new JPanel();
 	private final JTextField						studentNameField;
 	private final JTextField						studentGroupField;
 	private final Couple<JComboBox, JTextField>[]	exams;
-	private final int								examsCount		= 5;
+	private final int								examsCount							= 5;
 	private Student									student;
 
 	public ADialog() {
@@ -105,32 +94,11 @@ public class ADialog extends JDialog {
 
 		JButton button = new JButton(Window.geti18nString(ADialog.BUTTON_ADD));
 		buttonPane.add(button);
-		button.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-
-				if (verifyStudentFields() && verifyExamsFields()) {
-					generateStudent();
-					ADialog.this.setVisible(false);
-					ADialog.this.dispose();
-
-				}
-			}
-		});
+		button.addActionListener(new DialogAddButtonActionListener(this));
 
 		button = new JButton(Window.geti18nString(ADialog.BUTTON_CANCEL));
 		buttonPane.add(button);
-		button.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-
-				student = null;
-				ADialog.this.setVisible(false);
-				ADialog.this.dispose();
-			}
-		});
+		button.addActionListener(new DialogCancelButtonActionListener(this));
 	}
 
 	private void initExamPanel() {
@@ -160,7 +128,6 @@ public class ADialog extends JDialog {
 			subExamPanel.add(lbl);
 
 			final JComboBox field = exams[i].getField1();
-			// field.setText(Window.geti18nString(ADialog.EXAM_NAME_DEFAULT));
 			subExamPanel.add(field);
 
 			final JTextField field2 = exams[i].getField2();
@@ -195,7 +162,7 @@ public class ADialog extends JDialog {
 			final JTextField examMarkField) {
 
 		return ((String) examNameField.getSelectedItem()).length() == 0
-				|| !ADialog.isNumeric(examMarkField.getText());
+				|| !Util.isNumeric(examMarkField.getText());
 	}
 
 	private boolean isExamFiledsEmpty(final JComboBox examNameField,
@@ -233,14 +200,18 @@ public class ADialog extends JDialog {
 			isEmpty = b;
 			return new Couple<Boolean, Boolean>(true, true, 0);
 		} else if (isExamFieldsIncorrect(examNameField, examMarkField)) {
-			JOptionPane.showMessageDialog(null, ADialog.EXAM + (num + 1)
-					+ ADialog.NAME_OR_MARK_ISN_T_CORRECT);
+			JOptionPane.showMessageDialog(
+					null,
+					Window.geti18nString(ADialog.EXAM_N) + (num + 1) + " "
+							+ Window.geti18nString(ADialog.NAME_OR_MARK_ISN_T_CORRECT));
 			return new Couple<Boolean, Boolean>(false, isEmpty, 0);
-		} else if (ADialog.isNumeric(examMarkField.getText())) {
+		} else if (Util.isNumeric(examMarkField.getText())) {
 			final int mark = Integer.parseInt(examMarkField.getText());
 			if (isMarkIncorrect(mark)) {
-				JOptionPane.showMessageDialog(null, ADialog.EXAM + (num + 1)
-						+ ADialog.MARK_SHOULD_BE_0_10);
+				JOptionPane.showMessageDialog(
+						null,
+						Window.geti18nString(ADialog.EXAM_N) + (num + 1) + " "
+								+ Window.geti18nString(ADialog.MARK_SHOULD_BE_0_10));
 				return new Couple<Boolean, Boolean>(false, isEmpty, 0);
 			}
 		}
@@ -248,7 +219,7 @@ public class ADialog extends JDialog {
 		return new Couple<Boolean, Boolean>(true, isEmpty, 0);
 	}
 
-	private boolean verifyExamsFields() {
+	public boolean verifyExamsFields() {
 
 		boolean isAllFieldsEmpty = true;
 		boolean result = true;
@@ -265,16 +236,18 @@ public class ADialog extends JDialog {
 		if (!isAllFieldsEmpty) {
 			return result;
 		} else {
-			JOptionPane.showMessageDialog(null, ADialog.ALL_FIELDS_OF_EXAMS_EMPTY);
+			JOptionPane.showMessageDialog(null,
+					Window.geti18nString(ADialog.ALL_FIELDS_OF_EXAMS_EMPTY));
 			return false;
 		}
 	}
 
-	private boolean verifyStudentFields() {
+	public boolean verifyStudentFields() {
 
 		if (studentNameField.getText().length() == 0
-				|| !ADialog.isNumeric(studentGroupField.getText())) {
-			JOptionPane.showMessageDialog(null, "Student Name or Group isn't correct");
+				|| !Util.isNumeric(studentGroupField.getText())) {
+			JOptionPane.showMessageDialog(null,
+					Window.geti18nString(ADialog.STUDENT_NAME_OR_GROUP_ISN_T_CORRECT));
 			return false;
 		}
 		return true;

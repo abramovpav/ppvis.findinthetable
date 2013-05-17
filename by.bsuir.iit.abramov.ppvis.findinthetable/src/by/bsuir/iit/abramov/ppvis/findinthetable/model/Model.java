@@ -1,33 +1,18 @@
 package by.bsuir.iit.abramov.ppvis.findinthetable.model;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JTextField;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-import org.w3c.dom.Document;
 
 import by.bsuir.iit.abramov.ppvis.findinthetable.controller.Controller;
 import by.bsuir.iit.abramov.ppvis.findinthetable.util.Util;
 
 public class Model {
-	class Bool {
-		public boolean	bool;
-	}
 
 	public static final String		PROBLEM_PARSING_THE_FILE			= "problem_parsing_the_file";
 	public static final String		ERROR_ERROR_IN_CREATING_DOC			= "error_in_creating_doc";
@@ -39,7 +24,6 @@ public class Model {
 	public static final String		FIELD_EXAMS							= "exams";
 	public static final String		FIELD_GROUP							= "group";
 	public static final String		FIELD_NAME							= "name";
-
 	private static final String		ERROR_FILE_INCORRECT				= "error_file_incorrect";
 	private static Logger			LOG									= Logger.getLogger(Model.class
 																				.getName());
@@ -49,7 +33,6 @@ public class Model {
 	private final List<Controller>	observers;
 	public static final int			DEFAULT_VIEWSIZE					= 10;
 	private Integer					viewSize							= Model.DEFAULT_VIEWSIZE;
-
 	private int						currPage							= -1;
 
 	public Model() {
@@ -84,7 +67,7 @@ public class Model {
 		update();
 	}
 
-	public final int getCurrPage() {
+	private final int getCurrPage() {
 
 		return currPage;
 	}
@@ -109,9 +92,7 @@ public class Model {
 
 	public List<Student> getNextPageOfStudents() {
 
-		if (currPage < getMaxPage() - 1) {
-			currPage++;
-		}
+		leafNext();
 		return getPageOfStudents();
 	}
 
@@ -138,9 +119,7 @@ public class Model {
 
 	public List<Student> getPrevPageOfStudents() {
 
-		if (currPage > 0) {
-			currPage--;
-		}
+		leafPrev();
 		return getPageOfStudents();
 	}
 
@@ -173,14 +152,14 @@ public class Model {
 		}
 	}
 
-	public void notifyMaxObserver() {
+	private void notifyMaxObserver() {
 
 		if (maxObserver != null) {
 			maxObserver.setText(Integer.toString(students.size()));
 		}
 	}
 
-	public void notifyObserver() {
+	private void notifyObserver() {
 
 		if (observer != null) {
 			observer.setText(Integer.toString(viewSize));
@@ -207,7 +186,7 @@ public class Model {
 		}
 	}
 
-	public void resetCurrPage() {
+	private void resetCurrPage() {
 
 		currPage = 0;
 	}
@@ -301,31 +280,5 @@ public class Model {
 			iterator.next().update();
 		}
 
-	}
-
-	private void writeToFile(final File file, final Document doc) {
-
-		writeToFile(file.getPath(), doc);
-	}
-
-	private void writeToFile(final String xml, final Document doc)
-			throws TransformerFactoryConfigurationError {
-
-		try {
-			final Transformer tr = TransformerFactory.newInstance().newTransformer();
-			tr.setOutputProperty(OutputKeys.INDENT, "yes");
-			tr.setOutputProperty(OutputKeys.METHOD, "xml");
-			tr.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-			tr.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "students.dtd");
-			tr.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
-
-			// send DOM to file
-			tr.transform(new DOMSource(doc), new StreamResult(new FileOutputStream(xml)));
-
-		} catch (final TransformerException te) {
-			Model.LOG.log(Level.SEVERE, te.getMessage(), te);
-		} catch (final IOException ioe) {
-			Model.LOG.log(Level.SEVERE, ioe.getMessage(), ioe);
-		}
 	}
 }

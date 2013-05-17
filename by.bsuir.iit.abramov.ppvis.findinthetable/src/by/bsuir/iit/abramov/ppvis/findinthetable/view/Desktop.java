@@ -62,9 +62,11 @@ public class Desktop extends JPanel {
 
 	public void addStudent(final Student student) {
 
-		model.addStudent(student);
-		final List<Student> pageOfStudents = model.getCurrPageOfStudent();
-		setStudents(tableModel, pageOfStudents);
+		if (student != null) {
+			model.addStudent(student);
+			final List<Student> pageOfStudents = model.getCurrPageOfStudent();
+			setStudents(tableModel, pageOfStudents);
+		}
 	}
 
 	public void close() {

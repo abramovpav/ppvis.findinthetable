@@ -14,49 +14,15 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
-import by.bsuir.iit.abramov.ppvis.findinthetable.view.ADialog;
+import by.bsuir.iit.abramov.ppvis.findinthetable.util.Util;
 import by.bsuir.iit.abramov.ppvis.findinthetable.view.Desktop;
 import by.bsuir.iit.abramov.ppvis.findinthetable.view.Window;
 
 class XMLReader {
-	class Bool {
-		public boolean	bool;
-	}
-
-	private final class MyErrorHandler implements ErrorHandler {
-		@Override
-		public void error(final SAXParseException exception) throws SAXException {
-
-			// do something more useful in each of these handlers
-			// exception.printStackTrace();
-			XMLReader.LOG.log(Level.SEVERE,
-					"Error in parsing: " + exception.getMessage(), exception);
-		}
-
-		@Override
-		public void fatalError(final SAXParseException exception) throws SAXException {
-
-			// exception.printStackTrace();
-			XMLReader.LOG.log(Level.SEVERE,
-					"Error in parsing: " + exception.getMessage(), exception);
-		}
-
-		@Override
-		public void warning(final SAXParseException exception) throws SAXException {
-
-			// exception.printStackTrace();
-			XMLReader.LOG.log(Level.SEVERE,
-					"Error in parsing: " + exception.getMessage(), exception);
-		}
-	}
 
 	private static final String	PROBLEM_PARSING_THE_FILE			= "Problem parsing the file: ";
 	private static final String	ERROR_INCORRECT_QUANTITY_IN_EXAMS	= "***ERROR***: Incorrect quantity in exams";
-
 	private static Logger		LOG									= Logger.getLogger(XMLReader.class
 																			.getName());
 
@@ -89,9 +55,6 @@ class XMLReader {
 				}
 			}
 		}
-		/*
-		 * this.students.clear(); this.students.addAll(students);
-		 */
 		return students;
 	}
 
@@ -117,7 +80,7 @@ class XMLReader {
 			}
 		}
 
-		return new Exam(name, ADialog.isNumeric(mark) ? Integer.parseInt(mark) : null);
+		return new Exam(name, Util.isNumeric(mark) ? Integer.parseInt(mark) : null);
 	}
 
 	private Document parseForDOM(final File docFile) {
@@ -127,10 +90,10 @@ class XMLReader {
 			final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
 					.newInstance();
 			documentBuilderFactory.setValidating(true);
-			final DocumentBuilder docuumentBuilder = documentBuilderFactory
+			final DocumentBuilder documentBuilder = documentBuilderFactory
 					.newDocumentBuilder();
-			// db.setErrorHandler(new MyErrorHandler());
-			document = docuumentBuilder.parse(docFile);
+			documentBuilder.setErrorHandler(new MyErrorHandler());
+			document = documentBuilder.parse(docFile);
 			return document;
 		} catch (Exception e) {
 			XMLReader.LOG.log(
@@ -198,8 +161,8 @@ class XMLReader {
 					XMLReader.ERROR_INCORRECT_QUANTITY_IN_EXAMS + "(>"
 							+ Desktop.EXAMS_COUNT + ") of student " + name);
 		}
-		return new Student(name, ADialog.isNumeric(group) ? Integer.parseInt(group)
-				: null, exams);
+		return new Student(name, Util.isNumeric(group) ? Integer.parseInt(group) : null,
+				exams);
 	}
 
 }

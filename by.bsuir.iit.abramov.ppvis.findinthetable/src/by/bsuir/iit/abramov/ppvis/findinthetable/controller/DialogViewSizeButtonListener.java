@@ -8,22 +8,27 @@ import by.bsuir.iit.abramov.ppvis.findinthetable.view.Desktop;
 import by.bsuir.iit.abramov.ppvis.findinthetable.view.FindDialog;
 
 public class DialogViewSizeButtonListener implements ActionListener {
-	private final ActionListener	listener;
+	private int					modifier;
+	private final FindDialog	findDialog;
+	private final Model			model;
 
 	public DialogViewSizeButtonListener(final Model model, final FindDialog findDialog,
 			final String caption) {
 
-		if (Desktop.DECREMENT.equals(caption)) {
-			listener = new DialogDecrementButtonActionListener(model, findDialog);
+		this.model = model;
+		this.findDialog = findDialog;
+		if (Desktop.INCREMENT.equals(caption)) {
+			modifier = 1;
 		} else {
-			listener = new DialogIncrementButtonActionListener(model, findDialog);
+			modifier = -1;
 		}
 	}
 
 	@Override
 	public void actionPerformed(final ActionEvent e) {
 
-		listener.actionPerformed(e);
+		model.setViewSize(model.getViewSize() + modifier);
+		findDialog.tableUpdate();
 	}
 
 }

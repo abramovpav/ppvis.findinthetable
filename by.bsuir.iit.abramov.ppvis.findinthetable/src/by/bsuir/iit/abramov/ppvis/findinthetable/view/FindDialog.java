@@ -3,8 +3,6 @@ package by.bsuir.iit.abramov.ppvis.findinthetable.view;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -29,6 +27,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
+import by.bsuir.iit.abramov.ppvis.findinthetable.controller.FindDialogButtonActionListener;
 import by.bsuir.iit.abramov.ppvis.findinthetable.controller.NavigationButtonActionListener;
 import by.bsuir.iit.abramov.ppvis.findinthetable.model.Model;
 import by.bsuir.iit.abramov.ppvis.findinthetable.model.Student;
@@ -41,43 +40,16 @@ import by.bsuir.iit.abramov.ppvis.findinthetable.util.Util;
 
 public class FindDialog extends JDialog {
 
-	class ButtonActionListener implements ActionListener {
-
-		@Override
-		public void actionPerformed(final ActionEvent e) {
-
-			if (e.getActionCommand().equals(FindDialog.BUTTON_OK)) {
-				// search
-				final Integer checkFields = FindDialog.this.checkFields();
-				if (checkFields != null) {
-					if (FindDialog.BUTTON_OK == FindDialog.BUTTON_SEARCH) {
-						search(checkFields);
-					} else {
-						delete(checkFields);
-					}
-				}
-			} else if (e.getActionCommand().equals(FindDialog.BUTTON_CANCEL)) {
-				setVisible(false);
-				dispose();
-			}
-
-		}
-
-	}
-
 	private static final String									NO_FIELDS_MATCHING_REQUEST	= "no_fields_matching_request";
 
 	private static final String									SHARP						= " #";
 	public static final String									EXAM						= "exam";
-	private static final String									LABEL_EXAM					= "exam";
-	private static final String									LABEL_GROUP					= "group";
 	public static final String									GROUP						= "group";
 	public static final String									TO							= "to";
 	public static final String									FROM						= "from";
 	public static final String									NAME						= "name";
-	private static final String									LABEL_FIRST_NAME			= "name";
-	private static final String									BUTTON_CANCEL				= "cancel";
-	private static String										BUTTON_OK					= "search";
+	public static final String									BUTTON_CANCEL				= "cancel";
+	public static String										BUTTON_OK					= "search";
 	public static final String									BUTTON_SEARCH				= "search";
 	public static final String									BUTTON_DELETE				= "delete";
 	private static Logger										LOG							= Logger.getLogger(FindDialog.class
@@ -278,7 +250,7 @@ public class FindDialog extends JDialog {
 		return tableModel;
 	}
 
-	private void delete(final int num) {
+	public void delete(final int num) {
 
 		final List<Student> students = contP.search(groups.get(num), num);
 		if (students.size() == 0) {
@@ -324,13 +296,13 @@ public class FindDialog extends JDialog {
 
 		JButton button = new JButton(Window.geti18nString(FindDialog.BUTTON_OK));
 		button.setActionCommand(FindDialog.BUTTON_OK);
-		button.addActionListener(new ButtonActionListener());
+		button.addActionListener(new FindDialogButtonActionListener(this));
 		buttonPane.add(button);
 		getRootPane().setDefaultButton(button);
 
 		button = new JButton(Window.geti18nString(FindDialog.BUTTON_CANCEL));
 		button.setActionCommand(FindDialog.BUTTON_CANCEL);
-		button.addActionListener(new ButtonActionListener());
+		button.addActionListener(new FindDialogButtonActionListener(this));
 		buttonPane.add(button);
 
 		model = new Model();
@@ -354,7 +326,7 @@ public class FindDialog extends JDialog {
 		Util.combineCellInExamCaption(table, cellAtt);
 	}
 
-	private void search(final int num) {
+	public void search(final int num) {
 
 		final List<Student> students = contP.search(groups.get(num), num);
 		if (students.size() == 0) {
@@ -376,7 +348,7 @@ public class FindDialog extends JDialog {
 		panel_lvl5.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
 		final JTextField textField = createLabel_JTextField(panel_lvl5,
-				Window.geti18nString(FindDialog.LABEL_FIRST_NAME), 10);
+				Window.geti18nString(FindDialog.NAME), 10);
 		list.add(new CoupleExt<String, JTextField>(Window.geti18nString(FindDialog.NAME),
 				textField));
 		panel_lvl5 = new JPanel();
@@ -411,11 +383,10 @@ public class FindDialog extends JDialog {
 		panel_lvl4.add(panel_lvl5);
 		panel_lvl5.setLayout(new BoxLayout(panel_lvl5, BoxLayout.Y_AXIS));
 
-		final JLabel lblGroup = new JLabel(
-				Window.geti18nString(FindDialog.LABEL_FIRST_NAME));
+		final JLabel lblGroup = new JLabel(Window.geti18nString(FindDialog.NAME));
 		panel_lvl5.add(lblGroup);
 
-		final JLabel lblGroup_1 = new JLabel(Window.geti18nString(FindDialog.LABEL_GROUP));
+		final JLabel lblGroup_1 = new JLabel(Window.geti18nString(FindDialog.GROUP));
 		panel_lvl5.add(lblGroup_1);
 
 		panel_lvl5 = new JPanel();
@@ -458,11 +429,10 @@ public class FindDialog extends JDialog {
 		panel_lvl5.add(panel_lvl6);
 		panel_lvl6.setLayout(new BoxLayout(panel_lvl6, BoxLayout.Y_AXIS));
 
-		final JLabel lblFirstname = new JLabel(
-				Window.geti18nString(FindDialog.LABEL_FIRST_NAME));
+		final JLabel lblFirstname = new JLabel(Window.geti18nString(FindDialog.NAME));
 		panel_lvl6.add(lblFirstname);
 
-		final JLabel lblExam = new JLabel(Window.geti18nString(FindDialog.LABEL_EXAM));
+		final JLabel lblExam = new JLabel(Window.geti18nString(FindDialog.EXAM));
 		panel_lvl6.add(lblExam);
 
 		panel_lvl6 = new JPanel();
